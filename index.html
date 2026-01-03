@@ -24,27 +24,201 @@
     cursor: pointer;
     font-size: 26px;
     user-select: none;
-    transition: transform 0.2s;
+    transition: transform 0.2s, opacity 0.2s;
     display: flex;
     align-items: center;
     justify-content: center;
+    padding: 5px;
+    border-radius: 5px;
   }
   header .icon:hover {
     transform: scale(1.1);
+    background: rgba(255, 255, 255, 0.1);
   }
-  #tree-container {
+  header .icon.active {
+    background: rgba(255, 255, 255, 0.2);
+    transform: scale(1.05);
+  }
+  
+  /* КОНТЕЙНЕРЫ ДЛЯ РАЗНЫХ СЕКЦИЙ */
+  .section {
+    display: none;
     width: 100%;
     height: calc(100vh - 55px);
+    padding: 20px;
+    box-sizing: border-box;
     overflow: auto;
+  }
+  
+  .section.active {
+    display: block;
+  }
+  
+  /* СЕКЦИЯ ЛЮДИ (ДЕРЕВО) */
+  #people-section {
     background: #f6f1d1;
   }
   
-  /* УЗЕЛ */
+  /* СЕКЦИЯ ПОИСК */
+  #search-section {
+    background: #f6f1d1;
+  }
+  
+  .search-container {
+    max-width: 600px;
+    margin: 0 auto;
+    padding: 20px;
+  }
+  
+  .search-box {
+    width: 100%;
+    padding: 15px;
+    font-size: 16px;
+    border: 2px solid #26a69a;
+    border-radius: 25px;
+    margin-bottom: 20px;
+    box-sizing: border-box;
+  }
+  
+  .search-results {
+    background: white;
+    border-radius: 10px;
+    padding: 20px;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+  }
+  
+  .result-item {
+    padding: 10px;
+    border-bottom: 1px solid #eee;
+    cursor: pointer;
+  }
+  
+  .result-item:hover {
+    background: #f0f9f7;
+  }
+  
+  /* СЕКЦИЯ ДОБАВИТЬ */
+  #add-section {
+    background: #f6f1d1;
+  }
+  
+  .add-form {
+    max-width: 500px;
+    margin: 0 auto;
+    background: white;
+    padding: 30px;
+    border-radius: 10px;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+  }
+  
+  .form-group {
+    margin-bottom: 20px;
+  }
+  
+  .form-group label {
+    display: block;
+    margin-bottom: 5px;
+    color: #333;
+    font-weight: bold;
+  }
+  
+  .form-group input,
+  .form-group select {
+    width: 100%;
+    padding: 10px;
+    border: 2px solid #ddd;
+    border-radius: 5px;
+    font-size: 16px;
+    box-sizing: border-box;
+  }
+  
+  .form-group input:focus,
+  .form-group select:focus {
+    border-color: #26a69a;
+    outline: none;
+  }
+  
+  .submit-btn {
+    background: #26a69a;
+    color: white;
+    border: none;
+    padding: 12px 30px;
+    font-size: 16px;
+    border-radius: 5px;
+    cursor: pointer;
+    width: 100%;
+  }
+  
+  .submit-btn:hover {
+    background: #1e887c;
+  }
+  
+  /* СЕКЦИЯ ПОМОЩЬ */
+  #help-section {
+    background: #f6f1d1;
+  }
+  
+  .help-content {
+    max-width: 800px;
+    margin: 0 auto;
+    background: white;
+    padding: 30px;
+    border-radius: 10px;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+  }
+  
+  .help-item {
+    margin-bottom: 25px;
+  }
+  
+  .help-item h3 {
+    color: #26a69a;
+    margin-bottom: 10px;
+  }
+  
+  /* СЕКЦИЯ СТАТИСТИКА */
+  #stats-section {
+    background: #f6f1d1;
+  }
+  
+  .stats-container {
+    max-width: 800px;
+    margin: 0 auto;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 20px;
+  }
+  
+  .stat-card {
+    background: white;
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    text-align: center;
+  }
+  
+  .stat-number {
+    font-size: 36px;
+    font-weight: bold;
+    color: #26a69a;
+    margin: 10px 0;
+  }
+  
+  .stat-label {
+    color: #666;
+    font-size: 14px;
+  }
+  
+  /* СТИЛИ ДЛЯ ДЕРЕВА (ОСТАВИЛ ТВОИ) */
+  #tree-container {
+    width: 100%;
+    height: 100%;
+  }
+  
   .node-group {
     cursor: pointer;
   }
   
-  /* ФОН для кружка и текста */
   .node-background {
     fill: white;
     stroke: #456d61;
@@ -63,7 +237,6 @@
     stroke: #26a69a;
   }
   
-  /* КРУЖОК */
   .node-circle {
     fill: white;
     stroke: inherit;
@@ -71,7 +244,6 @@
     transition: stroke 0.3s;
   }
   
-  /* ИКОНКА В КРУЖКЕ */
   .node-icon {
     font-size: 14px;
     text-anchor: middle;
@@ -82,7 +254,6 @@
     font-weight: bold;
   }
   
-  /* ТЕКСТ СПРАВА ОТ КРУЖКА */
   .node-text {
     font-size: 14px;
     pointer-events: none;
@@ -93,7 +264,6 @@
     dominant-baseline: central;
   }
   
-  /* СВЯЗИ - ПРОСТЫЕ И КРАСИВЫЕ */
   .link {
     fill: none;
     stroke: #456d61;
@@ -123,22 +293,119 @@
 <body>
 
 <header>
-  <div class="icon" title="Люди"><i class="fas fa-users"></i></div>
-  <div class="icon" title="Поиск"><i class="fas fa-search"></i></div>
-  <div class="icon" title="Добавить"><i class="fas fa-user-plus"></i></div>
-  <div class="icon" title="Помощь"><i class="fas fa-question-circle"></i></div>
-  <div class="icon" title="Статистика"><i class="fas fa-chart-bar"></i></div>
+  <div class="icon active" title="Люди" data-section="people"><i class="fas fa-users"></i></div>
+  <div class="icon" title="Поиск" data-section="search"><i class="fas fa-search"></i></div>
+  <div class="icon" title="Добавить" data-section="add"><i class="fas fa-user-plus"></i></div>
+  <div class="icon" title="Помощь" data-section="help"><i class="fas fa-question-circle"></i></div>
+  <div class="icon" title="Статистика" data-section="stats"><i class="fas fa-chart-bar"></i></div>
 </header>
 
-<div id="tree-container"></div>
+<!-- СЕКЦИЯ ЛЮДИ (ДЕРЕВО) -->
+<div id="people-section" class="section active">
+  <div id="tree-container"></div>
+  <div class="floating-btn" title="Добавить узел">+</div>
+</div>
 
-<div class="floating-btn" title="Добавить узел">+</div>
+<!-- СЕКЦИЯ ПОИСК -->
+<div id="search-section" class="section">
+  <div class="search-container">
+    <input type="text" class="search-box" placeholder="Поиск по именам...">
+    <div class="search-results">
+      <h3>Результаты поиска:</h3>
+      <div id="search-results-list"></div>
+    </div>
+  </div>
+</div>
+
+<!-- СЕКЦИЯ ДОБАВИТЬ -->
+<div id="add-section" class="section">
+  <div class="add-form">
+    <h2>Добавить нового человека</h2>
+    <div class="form-group">
+      <label for="person-name">Имя:</label>
+      <input type="text" id="person-name" placeholder="Введите имя">
+    </div>
+    <div class="form-group">
+      <label for="parent-select">Родитель:</label>
+      <select id="parent-select">
+        <option value="">Выберите родителя</option>
+      </select>
+    </div>
+    <div class="form-group">
+      <label for="person-info">Дополнительная информация:</label>
+      <input type="text" id="person-info" placeholder="Годы жизни, достижения...">
+    </div>
+    <button class="submit-btn">Добавить в дерево</button>
+  </div>
+</div>
+
+<!-- СЕКЦИЯ ПОМОЩЬ -->
+<div id="help-section" class="section">
+  <div class="help-content">
+    <h2>Помощь по использованию Шежіре</h2>
+    
+    <div class="help-item">
+      <h3>👥 Управление деревом</h3>
+      <p>• Кликните на кружок, чтобы развернуть/свернуть ветку</p>
+      <p>• Используйте кнопку "+" в правом нижнем углу для быстрого добавления</p>
+      <p>• Все узлы можно раскрывать/скрывать по клику</p>
+    </div>
+    
+    <div class="help-item">
+      <h3>🔍 Поиск</h3>
+      <p>• Введите имя в поле поиска</p>
+      <p>• Кликните на результат для перехода к этому человеку в дереве</p>
+    </div>
+    
+    <div class="help-item">
+      <h3>👤 Добавление людей</h3>
+      <p>• Заполните форму в разделе "Добавить"</p>
+      <p>• Выберите родителя из существующих в дереве</p>
+      <p>• При необходимости добавьте дополнительную информацию</p>
+    </div>
+    
+    <div class="help-item">
+      <h3>📊 Статистика</h3>
+      <p>• Просматривайте общую статистику вашего дерева</p>
+      <p>• Узнайте количество людей на разных уровнях</p>
+    </div>
+  </div>
+</div>
+
+<!-- СЕКЦИЯ СТАТИСТИКА -->
+<div id="stats-section" class="section">
+  <div class="stats-container">
+    <div class="stat-card">
+      <h3>Всего людей</h3>
+      <div class="stat-number" id="total-people">0</div>
+      <div class="stat-label">в дереве</div>
+    </div>
+    
+    <div class="stat-card">
+      <h3>Уровней</h3>
+      <div class="stat-number" id="total-levels">0</div>
+      <div class="stat-label">глубина дерева</div>
+    </div>
+    
+    <div class="stat-card">
+      <h3>Веток</h3>
+      <div class="stat-number" id="total-branches">0</div>
+      <div class="stat-label">основные ветви</div>
+    </div>
+    
+    <div class="stat-card">
+      <h3>Листьев</h3>
+      <div class="stat-number" id="total-leaves">0</div>
+      <div class="stat-label">конечные узлы</div>
+    </div>
+  </div>
+</div>
 
 <script src="https://d3js.org/d3.v7.min.js"></script>
 <script>
+  // ГЛОБАЛЬНЫЕ ПЕРЕМЕННЫЕ
   let i = 0;
-  
-  const treeData = {
+  let currentTreeData = {
     name: "Алаш",
     children: [
       { name: "Ұлы жүз",
@@ -166,231 +433,421 @@
     ]
   };
 
-  const width = window.innerWidth;
-  const height = window.innerHeight - 55;
+  // ========== ПЕРЕКЛЮЧЕНИЕ СЕКЦИЙ ==========
+  const sections = document.querySelectorAll('.section');
+  const icons = document.querySelectorAll('header .icon');
   
-  const svg = d3.select("#tree-container")
-    .append("svg")
-    .attr("width", width)
-    .attr("height", height);
-
-  const g = svg.append("g")
-    .attr("transform", `translate(${width/2 - 100}, 150)`);
-
-  const treeLayout = d3.tree().size([height - 200, width - 300]);
-
-  let root = d3.hierarchy(treeData);
-  
-  function collapse(d) {
-    if (d.children) {
-      d._children = d.children;
-      d._children.forEach(collapse);
-      d.children = null;
-    }
-  }
-  
-  if (root.children) {
-    root.children.forEach(collapse);
-  }
-  
-  root.x0 = 0;
-  root.y0 = 0;
-
-  update(root);
-
-  function update(source) {
-    const duration = 500;
-    
-    const tree = treeLayout(root);
-    const nodes = tree.descendants();
-    const links = tree.links();
-
-    nodes.forEach(d => {
-      d.y = d.depth * 250;
+  icons.forEach(icon => {
+    icon.addEventListener('click', function() {
+      const sectionId = this.getAttribute('data-section');
+      
+      // Убираем active у всех иконок
+      icons.forEach(i => i.classList.remove('active'));
+      // Добавляем active текущей иконке
+      this.classList.add('active');
+      
+      // Скрываем все секции
+      sections.forEach(section => section.classList.remove('active'));
+      // Показываем нужную секцию
+      document.getElementById(`${sectionId}-section`).classList.add('active');
+      
+      // Если переключаемся на дерево - обновляем его
+      if (sectionId === 'people') {
+        setTimeout(initTree, 100);
+      }
+      
+      // Если переключаемся на статистику - обновляем её
+      if (sectionId === 'stats') {
+        updateStatistics();
+      }
+      
+      // Если переключаемся на добавление - обновляем список родителей
+      if (sectionId === 'add') {
+        updateParentSelect();
+      }
     });
+  });
 
-    // ====== УЗЛЫ ======
-    const node = g.selectAll('g.node-group')
-      .data(nodes, d => d.id || (d.id = ++i));
+  // ========== ИНИЦИАЛИЗАЦИЯ ДЕРЕВА ==========
+  function initTree() {
+    const width = window.innerWidth;
+    const height = window.innerHeight - 55;
+    
+    // Очищаем предыдущее дерево
+    d3.select("#tree-container").html("");
+    
+    const svg = d3.select("#tree-container")
+      .append("svg")
+      .attr("width", width)
+      .attr("height", height);
 
-    // Удаление узлов
-    const nodeExit = node.exit()
-      .transition()
-      .duration(duration)
-      .attr("transform", d => `translate(${source.y},${source.x})`)
-      .style("opacity", 0)
-      .remove();
+    const g = svg.append("g")
+      .attr("transform", `translate(${width/2 - 100}, 150)`);
 
-    // Добавление новых узлов
-    const nodeEnter = node.enter()
-      .append('g')
-      .attr('class', 'node-group')
-      .attr("transform", d => `translate(${source.y0},${source.x0})`)
-      .style("opacity", 0)
-      .on('click', function(event, d) {
-        event.stopPropagation();
-        if (d.children) {
-          d._children = d.children;
-          d.children = null;
-        } else if (d._children) {
-          d.children = d._children;
-          d._children = null;
-        }
-        update(d);
+    const treeLayout = d3.tree().size([height - 200, width - 300]);
+
+    let root = d3.hierarchy(currentTreeData);
+    
+    function collapse(d) {
+      if (d.children) {
+        d._children = d.children;
+        d._children.forEach(collapse);
+        d.children = null;
+      }
+    }
+    
+    if (root.children) {
+      root.children.forEach(collapse);
+    }
+    
+    root.x0 = 0;
+    root.y0 = 0;
+
+    updateTree(root);
+
+    function updateTree(source) {
+      const duration = 500;
+      
+      const tree = treeLayout(root);
+      const nodes = tree.descendants();
+      const links = tree.links();
+
+      nodes.forEach(d => {
+        d.y = d.depth * 250;
       });
 
-    // ФОН
-    nodeEnter.append('rect')
-      .attr('class', d => `node-background ${d._children ? 'collapsed' : 'expanded'}`)
-      .attr('x', -30)
-      .attr('y', -25)
-      .attr('width', 0)
-      .attr('height', 50);
+      // УЗЛЫ
+      const node = g.selectAll('g.node-group')
+        .data(nodes, d => d.id || (d.id = ++i));
 
-    // Кружок
-    nodeEnter.append('circle')
-      .attr('class', 'node-circle')
-      .attr('cx', 0)
-      .attr('cy', 0)
-      .attr('r', 0);
+      // Удаление
+      const nodeExit = node.exit()
+        .transition()
+        .duration(duration)
+        .attr("transform", d => `translate(${source.y},${source.x})`)
+        .style("opacity", 0)
+        .remove();
 
-    // Иконка в кружке
-    nodeEnter.append('text')
-      .attr('class', 'node-icon')
-      .attr('x', 0)
-      .attr('y', 0)
-      .text(d => {
-        if (d.depth === 0) return '👑';
-        if (d.depth === 1) return '⭐';
-        if (d._children) return '➕';
-        if (d.children) return '➖';
-        return '👤';
-      })
-      .style('opacity', 0);
+      // Добавление
+      const nodeEnter = node.enter()
+        .append('g')
+        .attr('class', 'node-group')
+        .attr("transform", d => `translate(${source.y0},${source.x0})`)
+        .style("opacity", 0)
+        .on('click', function(event, d) {
+          event.stopPropagation();
+          if (d.children) {
+            d._children = d.children;
+            d.children = null;
+          } else if (d._children) {
+            d.children = d._children;
+            d._children = null;
+          }
+          updateTree(d);
+        });
 
-    // Текст
-    nodeEnter.append('text')
-      .attr('class', 'node-text')
-      .attr('x', 25)
-      .attr('y', 0)
-      .text(d => d.data.name)
-      .style('opacity', 0);
+      // ФОН
+      nodeEnter.append('rect')
+        .attr('class', d => `node-background ${d._children ? 'collapsed' : 'expanded'}`)
+        .attr('x', -30)
+        .attr('y', -25)
+        .attr('width', 0)
+        .attr('height', 50);
 
-    // Объединяем
-    const nodeUpdate = nodeEnter.merge(node);
+      // Кружок
+      nodeEnter.append('circle')
+        .attr('class', 'node-circle')
+        .attr('cx', 0)
+        .attr('cy', 0)
+        .attr('r', 0);
 
-    // Анимация перемещения узлов
-    nodeUpdate.transition()
-      .duration(duration)
-      .attr("transform", d => `translate(${d.y},${d.x})`)
-      .style("opacity", 1);
+      // Иконка
+      nodeEnter.append('text')
+        .attr('class', 'node-icon')
+        .attr('x', 0)
+        .attr('y', 0)
+        .text(d => {
+          if (d.depth === 0) return '👑';
+          if (d.depth === 1) return '⭐';
+          if (d._children) return '➕';
+          if (d.children) return '➖';
+          return '👤';
+        })
+        .style('opacity', 0);
 
-    // Анимация фона
-    nodeUpdate.select('.node-background')
-      .transition()
-      .duration(duration)
-      .attr('width', function() {
-        const text = this.parentNode.querySelector('.node-text');
-        const textLength = text ? text.getComputedTextLength() : 0;
-        return Math.max(120, textLength + 60);
-      })
-      .attr('class', d => `node-background ${d._children ? 'collapsed' : 'expanded'}`);
+      // Текст
+      nodeEnter.append('text')
+        .attr('class', 'node-text')
+        .attr('x', 25)
+        .attr('y', 0)
+        .text(d => d.data.name)
+        .style('opacity', 0);
 
-    // Анимация кружка
-    nodeUpdate.select('.node-circle')
-      .transition()
-      .duration(duration)
-      .attr('r', 20)
-      .style('stroke', d => d._children ? '#4CAF50' : '#26a69a');
+      // Обновление
+      const nodeUpdate = nodeEnter.merge(node);
 
-    // Анимация иконки и текста
-    nodeUpdate.selectAll('.node-icon, .node-text')
-      .transition()
-      .duration(duration)
-      .style('opacity', 1);
+      nodeUpdate.transition()
+        .duration(duration)
+        .attr("transform", d => `translate(${d.y},${d.x})`)
+        .style("opacity", 1);
 
-    // ====== СВЯЗИ - ПРОСТАЯ АНИМАЦИЯ ======
-    const link = g.selectAll('path.link')
-      .data(links, d => d.target.id);
+      nodeUpdate.select('.node-background')
+        .transition()
+        .duration(duration)
+        .attr('width', function() {
+          const text = this.parentNode.querySelector('.node-text');
+          const textLength = text ? text.getComputedTextLength() : 0;
+          return Math.max(120, textLength + 60);
+        })
+        .attr('class', d => `node-background ${d._children ? 'collapsed' : 'expanded'}`);
 
-    // Удаление связей
-    link.exit()
-      .transition()
-      .duration(duration)
-      .style("opacity", 0)
-      .remove();
+      nodeUpdate.select('.node-circle')
+        .transition()
+        .duration(duration)
+        .attr('r', 20)
+        .style('stroke', d => d._children ? '#4CAF50' : '#26a69a');
 
-    // Добавление новых связей - начинаем от родителя
-    const linkEnter = link.enter()
-      .append('path')
-      .attr('class', 'link')
-      .attr('d', function(d) {
-        // Начинаем линию от родителя
-        const path = d3.path();
-        const startX = d.source.y + (d.source.data.name ? d.source.data.name.length * 8 + 60 : 100);
-        path.moveTo(startX, d.source.x);
-        path.lineTo(startX, d.source.x); // Начальная точка
-        return path.toString();
-      })
-      .style('opacity', 0);
+      nodeUpdate.selectAll('.node-icon, .node-text')
+        .transition()
+        .duration(duration)
+        .style('opacity', 1);
 
-    // Анимация появления линий
-    linkEnter.transition()
-      .duration(duration)
-      .attr('d', d => diagonal(d.source, d.target))
-      .style('opacity', 0.8);
+      // СВЯЗИ
+      const link = g.selectAll('path.link')
+        .data(links, d => d.target.id);
 
-    // Обновление существующих связей
-    const linkUpdate = linkEnter.merge(link);
+      link.exit()
+        .transition()
+        .duration(duration)
+        .style("opacity", 0)
+        .remove();
 
-    linkUpdate.transition()
-      .duration(duration)
-      .attr('d', d => diagonal(d.source, d.target))
-      .style('opacity', 0.8);
+      const linkEnter = link.enter()
+        .append('path')
+        .attr('class', 'link')
+        .attr('d', function(d) {
+          const path = d3.path();
+          const startX = d.source.y + (d.source.data.name ? d.source.data.name.length * 8 + 60 : 100);
+          path.moveTo(startX, d.source.x);
+          path.lineTo(startX, d.source.x);
+          return path.toString();
+        })
+        .style('opacity', 0);
 
-    // Сохраняем позиции
-    nodes.forEach(d => {
-      d.x0 = d.x;
-      d.y0 = d.y;
+      linkEnter.transition()
+        .duration(duration)
+        .attr('d', d => diagonal(d.source, d.target))
+        .style('opacity', 0.8);
+
+      const linkUpdate = linkEnter.merge(link);
+
+      linkUpdate.transition()
+        .duration(duration)
+        .attr('d', d => diagonal(d.source, d.target))
+        .style('opacity', 0.8);
+
+      nodes.forEach(d => {
+        d.x0 = d.x;
+        d.y0 = d.y;
+      });
+    }
+
+    function diagonal(s, d) {
+      const path = d3.path();
+      const startX = s.y + (s.data.name ? s.data.name.length * 8 + 60 : 100);
+      const startY = s.x;
+      const endX = d.y - 30;
+      const endY = d.x;
+      
+      path.moveTo(startX, startY);
+      const cp1x = startX + (endX - startX) * 0.5;
+      const cp1y = startY;
+      const cp2x = startX + (endX - startX) * 0.5;
+      const cp2y = endY;
+      
+      path.bezierCurveTo(cp1x, cp1y, cp2x, cp2y, endX, endY);
+      return path.toString();
+    }
+  }
+
+  // ========== ФУНКЦИЯ ДЛЯ ПОИСКА ==========
+  function searchInTree(query) {
+    const results = [];
+    const searchLower = query.toLowerCase();
+    
+    function traverse(node, path = []) {
+      if (node.data && node.data.name.toLowerCase().includes(searchLower)) {
+        results.push({
+          name: node.data.name,
+          path: [...path, node.data.name].join(' → '),
+          node: node
+        });
+      }
+      
+      if (node.children) {
+        node.children.forEach(child => traverse(child, [...path, node.data.name]));
+      }
+      if (node._children) {
+        node._children.forEach(child => traverse(child, [...path, node.data.name]));
+      }
+    }
+    
+    const root = d3.hierarchy(currentTreeData);
+    traverse(root);
+    return results;
+  }
+
+  // ========== ПОИСК ==========
+  const searchInput = document.querySelector('.search-box');
+  const resultsList = document.getElementById('search-results-list');
+  
+  searchInput.addEventListener('input', function() {
+    const query = this.value.trim();
+    
+    if (query.length < 2) {
+      resultsList.innerHTML = '<p>Введите минимум 2 символа</p>';
+      return;
+    }
+    
+    const results = searchInTree(query);
+    
+    if (results.length === 0) {
+      resultsList.innerHTML = '<p>Ничего не найдено</p>';
+      return;
+    }
+    
+    let html = '';
+    results.forEach(result => {
+      html += `
+        <div class="result-item" data-name="${result.name}">
+          <strong>${result.name}</strong>
+          <div style="font-size: 12px; color: #666;">${result.path}</div>
+        </div>
+      `;
     });
+    
+    resultsList.innerHTML = html;
+    
+    // Добавляем обработчики клика
+    document.querySelectorAll('.result-item').forEach(item => {
+      item.addEventListener('click', function() {
+        const name = this.getAttribute('data-name');
+        alert(`Переход к: ${name}\n(Функционал перехода будет добавлен позже)`);
+      });
+    });
+  });
+
+  // ========== ДОБАВЛЕНИЕ ==========
+  function updateParentSelect() {
+    const select = document.getElementById('parent-select');
+    select.innerHTML = '<option value="">Выберите родителя</option>';
+    
+    function addOptions(node, depth = 0) {
+      const indent = '— '.repeat(depth);
+      select.innerHTML += `<option value="${node.data.name}">${indent}${node.data.name}</option>`;
+      
+      if (node.children) {
+        node.children.forEach(child => addOptions(child, depth + 1));
+      }
+    }
+    
+    const root = d3.hierarchy(currentTreeData);
+    addOptions(root);
   }
 
-  function diagonal(s, d) {
-    const path = d3.path();
+  const addForm = document.querySelector('.add-form');
+  addForm.addEventListener('submit', function(e) {
+    e.preventDefault();
     
-    // Начало от правого края родителя
-    const startX = s.y + (s.data.name ? s.data.name.length * 8 + 60 : 100);
-    const startY = s.x;
+    const name = document.getElementById('person-name').value;
+    const parent = document.getElementById('parent-select').value;
+    const info = document.getElementById('person-info').value;
     
-    // Конец у левого края ребенка
-    const endX = d.y - 30;
-    const endY = d.x;
+    if (!name) {
+      alert('Введите имя');
+      return;
+    }
     
-    // Простая плавная кривая
-    path.moveTo(startX, startY);
+    if (!parent) {
+      alert('Выберите родителя');
+      return;
+    }
     
-    // Контрольные точки для плавной кривой
-    const cp1x = startX + (endX - startX) * 0.5;
-    const cp1y = startY;
-    const cp2x = startX + (endX - startX) * 0.5;
-    const cp2y = endY;
+    // Здесь будет логика добавления в дерево
+    alert(`Добавлен: ${name}\nРодитель: ${parent}\nИнфо: ${info || 'нет'}`);
     
-    path.bezierCurveTo(cp1x, cp1y, cp2x, cp2y, endX, endY);
-    
-    return path.toString();
-  }
-  
-  // Кнопка +
-  d3.select(".floating-btn").on("click", function() {
-    alert("Добавить новый узел");
+    // Очищаем форму
+    this.reset();
   });
-  
-  // Иконки в header
-  d3.selectAll("header .icon").on("click", function() {
-    const title = this.getAttribute("title");
-    console.log("Нажата иконка:", title);
+
+  // ========== СТАТИСТИКА ==========
+  function updateStatistics() {
+    function countNodes(node) {
+      let total = 1;
+      let leaves = 0;
+      let maxDepth = 0;
+      
+      function traverse(n, depth = 0) {
+        maxDepth = Math.max(maxDepth, depth);
+        
+        const hasChildren = (n.children && n.children.length > 0) || 
+                          (n._children && n._children.length > 0);
+        
+        if (!hasChildren) {
+          leaves++;
+        }
+        
+        if (n.children) {
+          n.children.forEach(child => {
+            total++;
+            traverse(child, depth + 1);
+          });
+        }
+        if (n._children) {
+          n._children.forEach(child => {
+            total++;
+            traverse(child, depth + 1);
+          });
+        }
+      }
+      
+      traverse(node);
+      
+      return {
+        total,
+        leaves,
+        maxDepth,
+        branches: node.children ? node.children.length : 0
+      };
+    }
+    
+    const root = d3.hierarchy(currentTreeData);
+    const stats = countNodes(root);
+    
+    document.getElementById('total-people').textContent = stats.total;
+    document.getElementById('total-levels').textContent = stats.maxDepth + 1;
+    document.getElementById('total-branches').textContent = stats.branches;
+    document.getElementById('total-leaves').textContent = stats.leaves;
+  }
+
+  // ========== КНОПКА + ==========
+  document.querySelector('.floating-btn').addEventListener('click', function() {
+    // Переключаем на секцию добавления
+    icons.forEach(i => i.classList.remove('active'));
+    document.querySelector('[data-section="add"]').classList.add('active');
+    
+    sections.forEach(s => s.classList.remove('active'));
+    document.getElementById('add-section').classList.add('active');
+    
+    updateParentSelect();
+  });
+
+  // ========== ИНИЦИАЛИЗАЦИЯ ПРИ ЗАГРУЗКЕ ==========
+  document.addEventListener('DOMContentLoaded', function() {
+    initTree();
+    updateStatistics();
+    updateParentSelect();
   });
 </script>
-
 </body>
 </html>
