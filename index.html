@@ -4,6 +4,8 @@
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>Шежіре</title>
+<!-- Добавляем Font Awesome -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 <style>
   body {
     margin: 0;
@@ -11,20 +13,23 @@
     background: #f6f1d1;
   }
   /* ИЗМЕНЁННЫЙ РАЗМЕР И ЦВЕТ ВЕРХНЕЙ ПАНЕЛИ */
-header {
-    background: #26a69a; /* Заменил #4CAF50 на #26a69a */
+  header {
+    background: #26a69a;
     color: white;
     height: 55px;
     display: flex;
     align-items: center;
     padding: 0 18px;
     gap: 22px;
-}
+  }
   header .icon {
     cursor: pointer;
-    font-size: 26px; /* Уменьшено с 32px до 26px */
+    font-size: 26px;
     user-select: none;
     transition: transform 0.2s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
   }
   header .icon:hover {
     transform: scale(1.1);
@@ -32,7 +37,7 @@ header {
   #tree {
     padding: 20px;
     overflow: auto;
-    height: calc(100vh - 55px); /* Учтено уменьшение высоты header */
+    height: calc(100vh - 55px);
   }
   .node circle {
     cursor: pointer;
@@ -71,11 +76,11 @@ header {
 <body>
 
 <header>
-  <div class="icon" title="Люди">&#128101;</div>
-  <div class="icon" title="Поиск">&#128269;</div>
-  <div class="icon" title="Добавить">&#128100;</div>
-  <div class="icon" title="Помощь">?</div>
-  <div class="icon" title="Статистика">&#128202;</div>
+  <div class="icon" title="Люди"><i class="fas fa-users"></i></div>
+  <div class="icon" title="Поиск"><i class="fas fa-search"></i></div>
+  <div class="icon" title="Добавить"><i class="fas fa-user-plus"></i></div>
+  <div class="icon" title="Помощь"><i class="fas fa-question-circle"></i></div>
+  <div class="icon" title="Статистика"><i class="fas fa-chart-bar"></i></div>
 </header>
 
 <div id="tree"></div>
@@ -113,7 +118,7 @@ header {
   };
 
   const width = window.innerWidth;
-  const height = window.innerHeight - 55; /* Учтено уменьшение высоты header */
+  const height = window.innerHeight - 55;
 
   const svg = d3.select("#tree").append("svg")
     .attr("width", width)
