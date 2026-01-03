@@ -38,22 +38,40 @@
     overflow: auto;
     background: #f6f1d1;
   }
-  /* КРУЖОЧКИ БЕЗ ФОНА - ТОЛЬКО ОБВОДКА */
-  .node circle {
+  /* УЗЕЛ - кружок + текст в одном фоне */
+  .node-group {
     cursor: pointer;
-    fill: white; /* БЕЛЫЙ ФОН */
-    stroke: #456d61;
-    stroke-width: 3px;
     transition: all 0.5s ease;
   }
-  .node circle.collapsed {
-    stroke: #4CAF50; /* Зеленая обводка для свернутых */
+  
+  /* ФОН для кружка и текста */
+  .node-background {
+    fill: white;
+    stroke: #456d61;
+    stroke-width: 2px;
+    rx: 25px;
+    ry: 25px;
+    filter: drop-shadow(2px 2px 4px rgba(0,0,0,0.1));
   }
-  .node circle.expanded {
-    stroke: #26a69a; /* Бирюзовая обводка для развернутых */
+  
+  .node-background.collapsed {
+    stroke: #4CAF50;
   }
+  
+  .node-background.expanded {
+    stroke: #26a69a;
+  }
+  
+  /* КРУЖОК */
+  .node-circle {
+    fill: white;
+    stroke: inherit;
+    stroke-width: 3px;
+  }
+  
+  /* ИКОНКА В КРУЖКЕ */
   .node-icon {
-    font-size: 16px;
+    font-size: 14px;
     text-anchor: middle;
     dominant-baseline: central;
     pointer-events: none;
@@ -61,20 +79,18 @@
     fill: #456d61;
     font-weight: bold;
   }
-  /* ТЕКСТ ВСЕГДА СПРАВА */
-  .node text.name {
-    font-size: 16px;
+  
+  /* ТЕКСТ СПРАВА ОТ КРУЖКА */
+  .node-text {
+    font-size: 14px;
     pointer-events: none;
     user-select: none;
     fill: #333;
     font-weight: bold;
-    transition: opacity 0.5s ease;
-    paint-order: stroke;
-    stroke: #f6f1d1;
-    stroke-width: 3px;
-    stroke-linecap: round;
-    stroke-linejoin: round;
+    text-anchor: start;
+    dominant-baseline: central;
   }
+  
   .link {
     fill: none;
     stroke: #456d61;
@@ -82,6 +98,7 @@
     transition: all 0.5s ease;
     opacity: 0.8;
   }
+  
   .floating-btn {
     position: fixed;
     bottom: 30px;
@@ -170,6 +187,7 @@
     }
   }
   
+  // Сворачиваем все узлы при загрузке
   if (root.children) {
     root.children.forEach(collapse);
   }
@@ -180,22 +198,23 @@
   update(root);
 
   function update(source) {
-    const duration = 600;
+    const duration = 400;
     
+    // Пересчитываем дерево с текущим состоянием
     const tree = treeLayout(root);
     const nodes = tree.descendants();
     const links = tree.links();
 
-    // ВСЕ ДЕТИ СПРАВА (включая Ұлы жүз)
+    // Настраиваем позиции
     nodes.forEach(d => {
-      d.y = d.depth * 200; // Все идут вправо
+      d.y = d.depth * 250;
     });
 
     // ====== УЗЛЫ ======
-    const node = g.selectAll('g.node')
+    const node = g.selectAll('g.node-group')
       .data(nodes, d => d.id || (d.id = ++i));
 
-    // Удаление
+    // Удаление узлов
     const nodeExit = node.exit()
       .transition()
       .duration(duration)
@@ -203,69 +222,91 @@
       .style("opacity", 0)
       .remove();
 
-    // Добавление
+    // Добавление новых узлов
     const nodeEnter = node.enter()
       .append('g')
-      .attr('class', 'node')
+      .attr('class', 'node-group')
       .attr("transform", d => `translate(${source.y0},${source.x0})`)
       .style("opacity", 0)
       .on('click', function(event, d) {
         event.stopPropagation();
+        // Переключаем состояние: свернуть/развернуть
         if (d.children) {
+          // Если есть дети - сворачиваем
           d._children = d.children;
           d.children = null;
-        } else {
+        } else if (d._children) {
+          // Если есть скрытые дети - разворачиваем
           d.children = d._children;
           d._children = null;
         }
+        // Перерисовываем дерево
         update(d);
       });
 
-    // Кружок без фона
-    nodeEnter.append('circle')
-      .attr('r', 0)
-      .attr('class', d => d._children ? 'collapsed' : 'expanded')
-      .attr('stroke-width', 3)
-      .style('fill', 'white'); // Белый фон
+    // ФОН
+    nodeEnter.append('rect')
+      .attr('class', d => `node-background ${d._children ? 'collapsed' : 'expanded'}`)
+      .attr('x', -30)
+      .attr('y', -25)
+      .attr('width', 0)
+      .attr('height', 50);
 
-    // Иконка внутри кружка
+    // Кружок
+    nodeEnter.append('circle')
+      .attr('class', 'node-circle')
+      .attr('cx', 0)
+      .attr('cy', 0)
+      .attr('r', 0);
+
+    // Иконка в кружке
     nodeEnter.append('text')
       .attr('class', 'node-icon')
-      .attr('dy', '0.35em')
+      .attr('x', 0)
+      .attr('y', 0)
       .text(d => {
-        if (d.depth === 0) return '👑'; // Корень
-        if (d.depth === 1) return '⭐'; // Жүзы
+        if (d.depth === 0) return '👑';
+        if (d.depth === 1) return '⭐';
         if (d._children) return '➕'; // Свернуто
         if (d.children) return '➖'; // Развернуто
-        return '👤'; // Лист
+        return '👤'; // Нет детей
       })
       .style('opacity', 0);
 
-    // Текст ВСЕГДА СПРАВА
+    // Текст
     nodeEnter.append('text')
-      .attr('class', 'name')
-      .attr("dy", "0.35em")
-      .attr("x", 40) // Всегда справа от кружка
-      .style("text-anchor", "start")
-      .style("font-size", d => d.depth === 0 ? "20px" : "16px")
-      .style("font-weight", "bold")
+      .attr('class', 'node-text')
+      .attr('x', 25)
+      .attr('y', 0)
       .text(d => d.data.name)
-      .style("opacity", 0);
+      .style('opacity', 0);
 
-    // Обновление
+    // Объединяем старые и новые узлы
     const nodeUpdate = nodeEnter.merge(node);
 
+    // Анимация перемещения
     nodeUpdate.transition()
       .duration(duration)
       .attr("transform", d => `translate(${d.y},${d.x})`)
       .style("opacity", 1);
 
-    // Анимация кружка
-    nodeUpdate.select('circle')
+    // Анимация фона
+    nodeUpdate.select('.node-background')
       .transition()
       .duration(duration)
-      .attr('r', 30)
-      .attr('class', d => d._children ? 'collapsed' : 'expanded')
+      .attr('width', function() {
+        const text = this.parentNode.querySelector('.node-text');
+        const textLength = text ? text.getComputedTextLength() : 0;
+        return Math.max(120, textLength + 60);
+      })
+      .attr('class', d => `node-background ${d._children ? 'collapsed' : 'expanded'}`)
+      .style('stroke', d => d._children ? '#4CAF50' : '#26a69a');
+
+    // Анимация кружка
+    nodeUpdate.select('.node-circle')
+      .transition()
+      .duration(duration)
+      .attr('r', 20)
       .style('stroke', d => d._children ? '#4CAF50' : '#26a69a');
 
     // Анимация иконки
@@ -282,46 +323,40 @@
       });
 
     // Анимация текста
-    nodeUpdate.select('.name')
+    nodeUpdate.select('.node-text')
       .transition()
       .duration(duration)
-      .style("opacity", 1)
-      .attr("x", 40); // Всегда справа
+      .style('opacity', 1)
+      .attr('x', 25);
 
     // ====== СВЯЗИ ======
     const link = g.selectAll('path.link')
       .data(links, d => d.target.id);
 
-    // Удаление
-    link.exit()
+    // Удаление старых связей
+    const linkExit = link.exit()
       .transition()
       .duration(duration)
-      .attr('d', d => {
-        const o = {x: source.x, y: source.y};
-        return diagonal(o, o);
-      })
       .style("opacity", 0)
       .remove();
 
-    // Добавление
+    // Добавление новых связей
     const linkEnter = link.enter()
       .append('path')
       .attr("class", "link")
-      .attr('d', d => {
-        const o = {x: source.x0, y: source.y0};
-        return diagonal(o, o);
-      })
+      .attr('d', d => diagonal(d.source, d.target))
       .style("opacity", 0);
 
-    // Обновление
+    // Объединяем связи
     const linkUpdate = linkEnter.merge(link);
 
+    // Анимация связей
     linkUpdate.transition()
       .duration(duration)
       .attr('d', d => diagonal(d.source, d.target))
       .style("opacity", 1);
 
-    // Сохраняем позиции
+    // Сохраняем текущие позиции для будущей анимации
     nodes.forEach(d => {
       d.x0 = d.x;
       d.y0 = d.y;
@@ -329,12 +364,16 @@
   }
 
   function diagonal(s, d) {
+    // Соединяем от правого края родителя к левому краю ребенка
+    const sourceX = s.y + (s.data.name ? s.data.name.length * 8 + 60 : 100);
+    const targetX = d.y - 30;
+    
     const path = d3.path();
-    path.moveTo(s.y, s.x);
+    path.moveTo(sourceX, s.x);
     path.bezierCurveTo(
-      (s.y + d.y) / 2, s.x,
-      (s.y + d.y) / 2, d.x,
-      d.y, d.x
+      (sourceX + targetX) / 2, s.x,
+      (sourceX + targetX) / 2, d.x,
+      targetX, d.x
     );
     return path.toString();
   }
