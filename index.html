@@ -4,7 +4,6 @@
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>Шежіре</title>
-<!-- Добавляем Font Awesome -->
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 <style>
   body {
@@ -12,7 +11,6 @@
     font-family: Arial, sans-serif;
     background: #f6f1d1;
   }
-  /* ИЗМЕНЁННЫЙ РАЗМЕР И ЦВЕТ ВЕРХНЕЙ ПАНЕЛИ */
   header {
     background: #26a69a;
     color: white;
@@ -38,6 +36,12 @@
     padding: 20px;
     overflow: auto;
     height: calc(100vh - 55px);
+    position: relative;
+    width: 100%;
+  }
+  #tree svg {
+    display: block;
+    min-width: 100%;
   }
   .node circle {
     cursor: pointer;
@@ -124,19 +128,11 @@
     .attr("width", width)
     .attr("height", height);
 
-  const g = svg.append("g").attr("transform", "translate(40,40)");
+  const g = svg.append("g").attr("transform", "translate(80,80)"); /* Увеличен отступ */
 
-  const treeLayout = d3.tree().size([height - 80, width - 160]);
+  const treeLayout = d3.tree().size([height - 160, width - 200]); /* Увеличена область */
 
   let root = d3.hierarchy(treeData);
-
-  function collapse(d) {
-    if(d.children) {
-      d._children = d.children;
-      d._children.forEach(collapse);
-      d.children = null;
-    }
-  }
 
   root.x0 = height / 2;
   root.y0 = 0;
@@ -149,7 +145,7 @@
     const nodes = treeData.descendants();
     const links = treeData.links();
 
-    nodes.forEach(d => d.y = d.depth * 180);
+    nodes.forEach(d => d.y = d.depth * 220); /* Увеличено расстояние между уровнями */
 
     const node = g.selectAll('g.node')
       .data(nodes, d => d.id || (d.id = ++i));
