@@ -1,167 +1,352 @@
 <!DOCTYPE html>
 <html lang="ru">
 <head>
-<meta charset="UTF-8">
-<title>Қазақ Шежіре</title>
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Қазақ Шежіре — Двухпанельный интерфейс</title>
 
 <style>
-/* ===== Общие стили ===== */
-body {
-  margin: 0;
-  font-family: Arial, sans-serif;
-  background: #f9f9f9;
-  color: #111;
-}
-header {
-  background: #fff;
-  text-align: center;
-  padding: 15px;
-  font-size: 20px;
-  font-weight: bold;
-  border-bottom: 1px solid #ddd;
-  position: sticky;
-  top: 0;
-  z-index: 100;
-}
+  /* === Сброс и базовые стили === */
+  body, html {
+    margin: 0; padding: 0; height: 100%;
+    font-family: Arial, sans-serif;
+    background: #f9f7f1;
+    color: #333;
+    overflow: hidden;
+  }
 
-/* ===== Контент ===== */
-#app {
-  padding: 20px;
-  display: flex;
-  justify-content: center;
-  flex-direction: column;
-  align-items: center;
-  animation: fadeIn 0.3s ease;
-}
-.card-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill,minmax(140px,1fr));
-  gap: 15px;
-  margin-top: 20px;
-  justify-items: center;
-}
-.card {
-  background: #fff;
-  border: 1px solid #ddd;
-  padding: 12px;
-  cursor: pointer;
-  text-align: center;
-  transition: 0.3s;
-  width: 140px;
-  box-shadow: 0 2px 6px rgba(0,0,0,0.1);
-}
-.card:hover {
-  border-color: #0077ff;
-  box-shadow: 0 4px 12px rgba(0,0,0,0.2);
-  transform: scale(1.03);
-}
-.back {
-  margin-top: 15px;
-  color: #0077ff;
-  cursor: pointer;
-  font-size: 14px;
-}
-.fade {
-  animation: fadeIn 0.3s ease;
-}
-@keyframes fadeIn {
-  from {opacity:0; transform: translateY(10px);}
-  to {opacity:1; transform: translateY(0);}
-}
+  header {
+    background: #009688;
+    color: white;
+    text-align: center;
+    font-weight: 700;
+    font-size: 22px;
+    padding: 15px 10px;
+    user-select: none;
+  }
+
+  /* === Основная сетка === */
+  #container {
+    display: flex;
+    height: calc(100% - 56px); /* Вычитаем высоту header */
+    overflow: hidden;
+  }
+
+  /* === Центральная панель (выбранный элемент) === */
+  #main-panel {
+    flex: 2.5;
+    background: white;
+    margin: 20px;
+    border-radius: 12px;
+    box-shadow: 0 8px 20px rgb(0 0 0 / 0.1);
+    padding: 20px;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    animation: fadeIn 0.4s ease;
+  }
+
+  /* === Правая панель (список соседей) === */
+  #side-panel {
+    flex: 1;
+    background: white;
+    margin: 20px 20px 20px 0;
+    border-radius: 12px;
+    box-shadow: 0 8px 20px rgb(0 0 0 / 0.1);
+    padding: 20px;
+    overflow-y: auto;
+  }
+
+  /* === Заголовки === */
+  h2 {
+    margin: 0 0 15px 0;
+    font-weight: 700;
+  }
+
+  /* === Карточки === */
+  .card {
+    background: #e1f5f4;
+    border-radius: 10px;
+    padding: 14px 16px;
+    margin-bottom: 12px;
+    cursor: pointer;
+    box-shadow: 0 4px 6px rgb(0 0 0 / 0.1);
+    transition: background-color 0.25s, transform 0.25s;
+    user-select: none;
+  }
+
+  .card:hover {
+    background-color: #b2dfdb;
+    transform: scale(1.03);
+  }
+
+  /* Выделенный выбранный элемент */
+  .card.selected {
+    background-color: #009688;
+    color: white;
+    cursor: default;
+    transform: none;
+  }
+
+  /* === Кнопка назад === */
+  #back-button {
+    margin-top: auto;
+    padding: 10px 0;
+    color: #009688;
+    cursor: pointer;
+    font-weight: 700;
+    user-select: none;
+  }
+  #back-button:hover {
+    text-decoration: underline;
+  }
+
+  /* === Анимация появления === */
+  @keyframes fadeIn {
+    from {
+      opacity: 0;
+      transform: translateY(20px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  /* Скролл для панели */
+  #main-panel::-webkit-scrollbar,
+  #side-panel::-webkit-scrollbar {
+    width: 6px;
+  }
+  #main-panel::-webkit-scrollbar-thumb,
+  #side-panel::-webkit-scrollbar-thumb {
+    background-color: rgba(0,0,0,0.1);
+    border-radius: 3px;
+  }
 </style>
 </head>
 
 <body>
+  <header>Қазақ Шежіре</header>
 
-<header>Қазақ Шежіре</header>
-
-<div id="app"></div>
+  <div id="container">
+    <section id="main-panel">
+      <h2>Загрузка данных...</h2>
+    </section>
+    <aside id="side-panel">
+      <!-- Соседи -->
+    </aside>
+  </div>
 
 <script>
-let DATA = {};
-let path = [];
+  let DATA = {};
+  let currentLevel = 0; // 0 = жузы, 1 = роды, 2 = люди
+  let currentPath = []; // путь выбора, например ['Алаш', 'Байтерек', 'Жанерке']
 
-// Загружаем JSON с данными
-fetch('data.json')
-  .then(res => res.json())
-  .then(json => {
-    DATA = json;
-    renderJuzes();
-  })
-  .catch(err => {
-    document.getElementById('app').innerText = 'Ошибка загрузки данных';
-  });
+  const mainPanel = document.getElementById('main-panel');
+  const sidePanel = document.getElementById('side-panel');
 
-// Рендер карточек
-function renderCards(title, items, onClick) {
-  const app = document.getElementById('app');
-  app.classList.remove('fade');
-  void app.offsetWidth; // для перезапуска анимации
-  app.classList.add('fade');
+  // Загрузить данные из data.json
+  fetch('data.json')
+    .then(res => res.json())
+    .then(json => {
+      DATA = json;
+      currentLevel = 0;
+      currentPath = [];
+      render();
+    })
+    .catch(() => {
+      mainPanel.innerHTML = '<h2>Ошибка загрузки данных</h2>';
+    });
 
-  app.innerHTML = `<h3>${title}</h3><div class="card-grid"></div>`;
-  const grid = app.querySelector('.card-grid');
-
-  items.forEach(item => {
-    const div = document.createElement('div');
-    div.className = 'card';
-    div.textContent = item;
-    div.onclick = () => onClick(item);
-    grid.appendChild(div);
-  });
-
-  if (path.length > 1) {
-    const back = document.createElement('div');
-    back.className = 'back';
-    back.textContent = '← Назад';
-    back.onclick = goBack;
-    app.appendChild(back);
+  // Рендер всего интерфейса в зависимости от currentLevel и currentPath
+  function render() {
+    if (currentLevel === 0) {
+      renderJuzes();
+    } else if (currentLevel === 1) {
+      renderRods();
+    } else if (currentLevel === 2) {
+      renderPeople();
+    }
   }
-}
 
-// Начальный экран — жузы
-function renderJuzes() {
-  path = [];
-  const juzes = Object.keys(DATA);
-  renderCards('Выберите жуз', juzes, openJuz);
-}
+  // ===== Рендер жузы (уровень 0) =====
+  function renderJuzes() {
+    mainPanel.innerHTML = '<h2>Жузы</h2>';
+    sidePanel.innerHTML = '';
 
-// Открываем жуз → список родов
-function openJuz(juz) {
-  path = [juz];
-  const rods = Object.keys(DATA[juz].Роды);
-  renderCards(juz, rods, openRod);
-}
+    const juzes = Object.keys(DATA);
+    if (juzes.length === 0) {
+      mainPanel.innerHTML += '<p>Жузы не найдены.</p>';
+      return;
+    }
 
-// Открываем род → список людей
-function openRod(rod) {
-  path.push(rod);
-  const people = DATA[path[0]].Роды[rod];
-  renderCards(path.join(' → '), people, openPerson);
-}
+    // Выбрано — пусто, т.к. выбор на уровне 0 пуст
+    currentPath = [];
 
-// Открываем человека → информация
-function openPerson(name) {
-  path.push(name);
-  const app = document.getElementById('app');
-  app.classList.remove('fade');
-  void app.offsetWidth;
-  app.classList.add('fade');
+    // Выводим главный список жуз
+    juzes.forEach(juz => {
+      const card = createCard(juz, false, () => {
+        currentLevel = 1;
+        currentPath = [juz];
+        render();
+      });
+      mainPanel.appendChild(card);
+    });
+  }
 
-  app.innerHTML = `<h3>${path.join(' → ')}</h3>
-  <p>Информация о ${name} здесь</p>
-  <div class="back" onclick="goBack()">← Назад</div>`;
-}
+  // ===== Рендер родов (уровень 1) =====
+  function renderRods() {
+    mainPanel.innerHTML = '';
+    sidePanel.innerHTML = '';
 
-// Кнопка назад
-function goBack() {
-  path.pop();
-  if (path.length === 0) renderJuzes();
-  else if (path.length === 1) openJuz(path[0]);
-  else if (path.length === 2) openRod(path[1]);
-}
+    const juz = currentPath[0];
+    const rods = DATA[juz] ? Object.keys(DATA[juz]) : [];
+    if (!rods || rods.length === 0) {
+      mainPanel.innerHTML = '<h2>Роды не найдены</h2>';
+      renderBackButton();
+      return;
+    }
+
+    // Главная панель — выбранный жуз и список родов
+    const juzTitle = document.createElement('h2');
+    juzTitle.textContent = juz;
+    mainPanel.appendChild(juzTitle);
+
+    rods.forEach(rod => {
+      const card = createCard(rod, false, () => {
+        currentLevel = 2;
+        currentPath.push(rod);
+        render();
+      });
+      mainPanel.appendChild(card);
+    });
+
+    // Правая панель — остальные жузы кроме выбранного
+    const juzes = Object.keys(DATA).filter(j => j !== juz);
+    sidePanel.innerHTML = '<h2>Жузы</h2>';
+    juzes.forEach(juzName => {
+      const card = createCard(juzName, false, () => {
+        currentLevel = 1;
+        currentPath = [juzName];
+        render();
+      });
+      sidePanel.appendChild(card);
+    });
+
+    renderBackButton();
+  }
+
+  // ===== Рендер людей (уровень 2) =====
+  function renderPeople() {
+    mainPanel.innerHTML = '';
+    sidePanel.innerHTML = '';
+
+    const juz = currentPath[0];
+    const rod = currentPath[1];
+    const people = DATA[juz][rod] || [];
+
+    // Главная панель — выбранный род и список людей
+    const rodTitle = document.createElement('h2');
+    rodTitle.textContent = `${juz} → ${rod}`;
+    mainPanel.appendChild(rodTitle);
+
+    people.forEach(person => {
+      const card = createCard(person, false, () => {
+        currentLevel = 3;
+        currentPath.push(person);
+        render();
+      });
+      mainPanel.appendChild(card);
+    });
+
+    // Правая панель — остальные роды выбранного жузa, кроме выбранного
+    const rods = Object.keys(DATA[juz]).filter(r => r !== rod);
+    sidePanel.innerHTML = `<h2>Роды (${juz})</h2>`;
+    rods.forEach(rodName => {
+      const card = createCard(rodName, false, () => {
+        currentLevel = 2;
+        currentPath = [juz, rodName];
+        render();
+      });
+      sidePanel.appendChild(card);
+    });
+
+    renderBackButton();
+  }
+
+  // ===== Рендер информации о человеке (уровень 3) =====
+  function renderPersonInfo() {
+    mainPanel.innerHTML = '';
+    sidePanel.innerHTML = '';
+
+    const [juz, rod, person] = currentPath;
+
+    const title = document.createElement('h2');
+    title.textContent = `${juz} → ${rod} → ${person}`;
+    mainPanel.appendChild(title);
+
+    const info = document.createElement('p');
+    info.textContent = `Информация о ${person} пока отсутствует.`;
+    mainPanel.appendChild(info);
+
+    // Правая панель — список людей кроме выбранного
+    const people = DATA[juz][rod].filter(p => p !== person);
+    sidePanel.innerHTML = `<h2>Люди (${rod})</h2>`;
+    people.forEach(personName => {
+      const card = createCard(personName, false, () => {
+        currentLevel = 3;
+        currentPath = [juz, rod, personName];
+        render();
+      });
+      sidePanel.appendChild(card);
+    });
+
+    renderBackButton();
+  }
+
+  // В зависимости от currentLevel вызовем правильный рендер для уровня 3
+  function render() {
+    if (currentLevel === 0) renderJuzes();
+    else if (currentLevel === 1) renderRods();
+    else if (currentLevel === 2) renderPeople();
+    else if (currentLevel === 3) renderPersonInfo();
+  }
+
+  // Создание карточки с выделением и обработчиком клика
+  function createCard(text, selected, onClick) {
+    const div = document.createElement('div');
+    div.className = 'card' + (selected ? ' selected' : '');
+    div.textContent = text;
+    div.onclick = onClick;
+    return div;
+  }
+
+  // Кнопка назад
+  function renderBackButton() {
+    if (currentLevel === 0) return; // Нет назад с главного экрана
+
+    let text = '← Назад';
+    const backBtn = document.createElement('div');
+    backBtn.id = 'back-button';
+    backBtn.textContent = text;
+    backBtn.onclick = () => {
+      if (currentLevel === 1) {
+        currentLevel = 0;
+        currentPath = [];
+      } else if (currentLevel === 2) {
+        currentLevel = 1;
+        currentPath.pop();
+      } else if (currentLevel === 3) {
+        currentLevel = 2;
+        currentPath.pop();
+      }
+      render();
+    };
+
+    // Вставим в конец главной панели
+    mainPanel.appendChild(backBtn);
+  }
 </script>
-
 </body>
 </html>
