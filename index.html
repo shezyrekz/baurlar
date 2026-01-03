@@ -10,29 +10,29 @@
     font-family: Arial, sans-serif;
     background: #f6f1d1;
   }
-  /* УВЕЛИЧИЛ ВЕРХНЮЮ ПАНЕЛЬ */
-  header {
-    background: #009688;
+  /* ИЗМЕНЁННЫЙ РАЗМЕР И ЦВЕТ ВЕРХНЕЙ ПАНЕЛИ */
+header {
+    background: #26a69a; /* Заменил #4CAF50 на #26a69a */
     color: white;
-    height: 70px; /* Увеличено с 50px до 70px */
+    height: 55px;
     display: flex;
     align-items: center;
-    padding: 0 25px; /* Увеличено с 15px до 25px */
-    gap: 30px; /* Увеличено с 20px до 30px */
-  }
+    padding: 0 18px;
+    gap: 22px;
+}
   header .icon {
     cursor: pointer;
-    font-size: 32px; /* Увеличено с 24px до 32px */
+    font-size: 26px; /* Уменьшено с 32px до 26px */
     user-select: none;
-    transition: transform 0.2s; /* Добавил плавный эффект */
+    transition: transform 0.2s;
   }
   header .icon:hover {
-    transform: scale(1.1); /* Легкое увеличение при наведении */
+    transform: scale(1.1);
   }
   #tree {
     padding: 20px;
     overflow: auto;
-    height: calc(100vh - 70px); /* Учтено увеличение высоты header */
+    height: calc(100vh - 55px); /* Учтено уменьшение высоты header */
   }
   .node circle {
     cursor: pointer;
@@ -113,7 +113,7 @@
   };
 
   const width = window.innerWidth;
-  const height = window.innerHeight - 70; /* Учтено увеличение высоты header */
+  const height = window.innerHeight - 55; /* Учтено уменьшение высоты header */
 
   const svg = d3.select("#tree").append("svg")
     .attr("width", width)
@@ -125,7 +125,6 @@
 
   let root = d3.hierarchy(treeData);
 
-  // Функция для сворачивания всех детей узла
   function collapse(d) {
     if(d.children) {
       d._children = d.children;
@@ -137,9 +136,6 @@
   root.x0 = height / 2;
   root.y0 = 0;
 
-  // УБРАЛ СВОРАЧИВАНИЕ ПРИ ЗАГРУЗКЕ - теперь все узлы видны сразу
-  // root.children.forEach(collapse); // ЗАКОММЕНТИРОВАНО
-
   update(root);
 
   function update(source) {
@@ -148,23 +144,17 @@
     const nodes = treeData.descendants();
     const links = treeData.links();
 
-    // Нормализуем позиции по Y
     nodes.forEach(d => d.y = d.depth * 180);
 
-    // **************** Nodes section ***************************
-
-    // Обновление узлов
     const node = g.selectAll('g.node')
       .data(nodes, d => d.id || (d.id = ++i));
 
-    // Удаление ушедших
     const nodeExit = node.exit()
       .transition()
       .duration(200)
       .attr("transform", d => `translate(${source.y},${source.x})`)
       .remove();
 
-    // Вход новых узлов
     const nodeEnter = node.enter()
       .append('g')
       .attr('class', 'node')
@@ -192,7 +182,6 @@
       .style("text-anchor", d => d.children || d._children ? "end" : "start")
       .text(d => d.data.name);
 
-    // Обновляем позиции существующих узлов
     const nodeUpdate = nodeEnter.merge(node);
 
     nodeUpdate.transition()
@@ -203,13 +192,9 @@
       .attr('r', 20)
       .attr('fill', d => d._children ? "#a1c2bb" : "#69b3a2");
 
-    // **************** Links section ***************************
-
-    // Обновляем связи
     const link = g.selectAll('path.link')
       .data(links, d => d.target.id);
 
-    // Удаляем старые ссылки
     link.exit()
       .transition()
       .duration(200)
@@ -219,7 +204,6 @@
       })
       .remove();
 
-    // Добавляем новые ссылки
     const linkEnter = link.enter()
       .insert('path', "g")
       .attr("class", "link")
@@ -228,21 +212,18 @@
         return diagonal(o, o);
       });
 
-    // Обновляем позиции ссылок
     const linkUpdate = linkEnter.merge(link);
 
     linkUpdate.transition()
       .duration(200)
       .attr('d', d => diagonal(d.source, d.target));
 
-    // Сохраняем текущие позиции для анимации
     nodes.forEach(d => {
       d.x0 = d.x;
       d.y0 = d.y;
     });
   }
 
-  // Функция для рисования линий между узлами (диагональная кривая)
   function diagonal(s, d) {
     return `M ${s.y} ${s.x}
             C ${(s.y + d.y) / 2} ${s.x},
