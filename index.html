@@ -10,6 +10,7 @@
     margin: 0;
     font-family: Arial, sans-serif;
     background: #f6f1d1;
+    overflow: hidden;
   }
   header {
     background: #26a69a;
@@ -19,6 +20,8 @@
     align-items: center;
     padding: 0 18px;
     gap: 22px;
+    position: relative;
+    z-index: 10;
   }
   header .icon {
     cursor: pointer;
@@ -32,16 +35,18 @@
   header .icon:hover {
     transform: scale(1.1);
   }
-  #tree {
-    padding: 20px;
-    overflow: auto;
-    height: calc(100vh - 55px);
-    position: relative;
-    width: 100%;
+  #tree-container {
+    position: absolute;
+    top: 55px;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    overflow: hidden;
+    background: #f6f1d1;
   }
-  #tree svg {
-    display: block;
-    min-width: 100%;
+  #tree {
+    width: 100%;
+    height: 100%;
   }
   .node circle {
     cursor: pointer;
@@ -53,6 +58,7 @@
     font-size: 14px;
     pointer-events: none;
     user-select: none;
+    fill: #333;
   }
   .link {
     fill: none;
@@ -74,6 +80,27 @@
     cursor: pointer;
     box-shadow: 0 2px 6px rgba(0,0,0,0.3);
     user-select: none;
+    z-index: 100;
+  }
+  .controls {
+    position: fixed;
+    top: 70px;
+    right: 20px;
+    z-index: 100;
+    background: white;
+    padding: 10px;
+    border-radius: 5px;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+  }
+  .controls button {
+    display: block;
+    margin: 5px 0;
+    padding: 8px 12px;
+    background: #26a69a;
+    color: white;
+    border: none;
+    border-radius: 3px;
+    cursor: pointer;
   }
 </style>
 </head>
@@ -87,7 +114,15 @@
   <div class="icon" title="Статистика"><i class="fas fa-chart-bar"></i></div>
 </header>
 
-<div id="tree"></div>
+<div id="tree-container">
+  <svg id="tree"></svg>
+</div>
+
+<div class="controls">
+  <button onclick="resetView()">Сбросить вид</button>
+  <button onclick="zoomIn()">Увеличить</button>
+  <button onclick="zoomOut()">Уменьшить</button>
+</div>
 
 <div class="floating-btn" title="Добавить узел">+</div>
 
@@ -121,21 +156,55 @@
     ]
   };
 
-  const width = window.innerWidth;
-  const height = window.innerHeight - 55;
+  const container = document.getElementById('tree-container');
+  const width = container.clientWidth;
+  const height = container.clientHeight;
 
-  const svg = d3.select("#tree").append("svg")
+  const svg = d3.select("#tree")
     .attr("width", width)
     .attr("height", height);
 
-  const g = svg.append("g").attr("transform", "translate(80,80)"); /* Увеличен отступ */
+  // Создаем группу для масштабирования и панорамирования
+  const g = svg.append("g");
+  
+  // Настройка масштабирования и панорамирования
+  const zoom = d3.zoom()
+    .scaleExtent([0.1, 3])
+    .on("zoom", (event) => {
+      g.attr("transform", event.transform);
+    });
 
-  const treeLayout = d3.tree().size([height - 160, width - 200]); /* Увеличена область */
+  svg.call(zoom);
+
+  // Функции для управления
+  function resetView() {
+    svg.transition().duration(750).call(
+      zoom.transform,
+      d3.zoomIdentity.translate(width/2 - 200, 50).scale(1)
+    );
+  }
+
+  function zoomIn() {
+    svg.transition().duration(300).call(zoom.scaleBy, 1.3);
+  }
+
+  function zoomOut() {
+    svg.transition().duration(300).call(zoom.scaleBy, 0.7);
+  }
+
+  const treeLayout = d3.tree().size([height - 100, width - 200]);
 
   let root = d3.hierarchy(treeData);
+  
+  // Сразу разворачиваем все узлы
+  root.each(d => {
+    if (d.children) {
+      d._children = null; // Убираем возможность сворачивания
+    }
+  });
 
   root.x0 = height / 2;
-  root.y0 = 0;
+  root.y0 = width / 4;
 
   update(root);
 
@@ -145,84 +214,56 @@
     const nodes = treeData.descendants();
     const links = treeData.links();
 
-    nodes.forEach(d => d.y = d.depth * 220); /* Увеличено расстояние между уровнями */
+    // Увеличиваем расстояние между уровнями
+    nodes.forEach(d => {
+      d.y = d.depth * 250; // Увеличено расстояние
+      d.x = d.x * 0.8 + 50; // Корректируем вертикальное положение
+    });
 
+    // Очищаем предыдущее дерево
+    g.selectAll("*").remove();
+
+    // Рисуем связи
+    const link = g.selectAll('path.link')
+      .data(links)
+      .enter()
+      .append('path')
+      .attr("class", "link")
+      .attr('d', d => diagonal(d.source, d.target));
+
+    // Рисуем узлы
     const node = g.selectAll('g.node')
-      .data(nodes, d => d.id || (d.id = ++i));
-
-    const nodeExit = node.exit()
-      .transition()
-      .duration(200)
-      .attr("transform", d => `translate(${source.y},${source.x})`)
-      .remove();
-
-    const nodeEnter = node.enter()
+      .data(nodes)
+      .enter()
       .append('g')
       .attr('class', 'node')
-      .attr("transform", d => `translate(${source.y0},${source.x0})`)
-      .on('click', (event, d) => {
-        if(d.children) {
-          d._children = d.children;
-          d.children = null;
-        } else {
-          d.children = d._children;
-          d._children = null;
-        }
-        update(d);
-      });
+      .attr("transform", d => `translate(${d.y},${d.x})`);
 
-    nodeEnter.append('circle')
-      .attr('r', 1e-6)
-      .attr('fill', d => d._children ? "#a1c2bb" : "#69b3a2")
+    node.append('circle')
+      .attr('r', 20)
+      .attr('fill', "#69b3a2")
       .attr('stroke', '#456d61')
       .attr('stroke-width', 2);
 
-    nodeEnter.append('text')
+    node.append('text')
       .attr("dy", 5)
-      .attr("x", d => d.children || d._children ? -25 : 25)
-      .style("text-anchor", d => d.children || d._children ? "end" : "start")
+      .attr("x", d => d.children ? -25 : 25)
+      .style("text-anchor", d => d.children ? "end" : "start")
       .text(d => d.data.name);
 
-    const nodeUpdate = nodeEnter.merge(node);
-
-    nodeUpdate.transition()
-      .duration(200)
-      .attr("transform", d => `translate(${d.y},${d.x})`);
-
-    nodeUpdate.select('circle')
-      .attr('r', 20)
-      .attr('fill', d => d._children ? "#a1c2bb" : "#69b3a2");
-
-    const link = g.selectAll('path.link')
-      .data(links, d => d.target.id);
-
-    link.exit()
-      .transition()
-      .duration(200)
-      .attr('d', d => {
-        const o = {x: source.x, y: source.y};
-        return diagonal(o, o);
-      })
-      .remove();
-
-    const linkEnter = link.enter()
-      .insert('path', "g")
-      .attr("class", "link")
-      .attr('d', d => {
-        const o = {x: source.x0, y: source.y0};
-        return diagonal(o, o);
-      });
-
-    const linkUpdate = linkEnter.merge(link);
-
-    linkUpdate.transition()
-      .duration(200)
-      .attr('d', d => diagonal(d.source, d.target));
-
-    nodes.forEach(d => {
-      d.x0 = d.x;
-      d.y0 = d.y;
-    });
+    // Автоматически центрируем вид
+    setTimeout(() => {
+      const bounds = g.node().getBBox();
+      const dx = bounds.width;
+      const dy = bounds.height;
+      const x = (width - dx) / 2 - bounds.x;
+      const y = (height - dy) / 2 - bounds.y;
+      
+      svg.transition().duration(750).call(
+        zoom.transform,
+        d3.zoomIdentity.translate(x, y).scale(1)
+      );
+    }, 100);
   }
 
   function diagonal(s, d) {
@@ -231,8 +272,6 @@
               ${(s.y + d.y) / 2} ${d.x},
               ${d.y} ${d.x}`;
   }
-
-  let i = 0;
 </script>
 
 </body>
