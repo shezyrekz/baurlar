@@ -38,32 +38,49 @@
     overflow: auto;
     background: #f6f1d1;
   }
+  /* КРУЖОЧКИ БЕЗ ФОНА - ТОЛЬКО ОБВОДКА */
   .node circle {
     cursor: pointer;
-    fill: #69b3a2;
+    fill: white; /* БЕЛЫЙ ФОН */
     stroke: #456d61;
     stroke-width: 3px;
     transition: all 0.5s ease;
   }
   .node circle.collapsed {
-    fill: #4CAF50;
+    stroke: #4CAF50; /* Зеленая обводка для свернутых */
   }
   .node circle.expanded {
-    fill: #fff;
+    stroke: #26a69a; /* Бирюзовая обводка для развернутых */
   }
-  .node text {
+  .node-icon {
+    font-size: 16px;
+    text-anchor: middle;
+    dominant-baseline: central;
+    pointer-events: none;
+    user-select: none;
+    fill: #456d61;
+    font-weight: bold;
+  }
+  /* ТЕКСТ ВСЕГДА СПРАВА */
+  .node text.name {
     font-size: 16px;
     pointer-events: none;
     user-select: none;
     fill: #333;
     font-weight: bold;
     transition: opacity 0.5s ease;
+    paint-order: stroke;
+    stroke: #f6f1d1;
+    stroke-width: 3px;
+    stroke-linecap: round;
+    stroke-linejoin: round;
   }
   .link {
     fill: none;
     stroke: #456d61;
     stroke-width: 2px;
     transition: all 0.5s ease;
+    opacity: 0.8;
   }
   .floating-btn {
     position: fixed;
@@ -169,8 +186,9 @@
     const nodes = tree.descendants();
     const links = tree.links();
 
+    // ВСЕ ДЕТИ СПРАВА (включая Ұлы жүз)
     nodes.forEach(d => {
-      d.y = d.depth * 200;
+      d.y = d.depth * 200; // Все идут вправо
     });
 
     // ====== УЗЛЫ ======
@@ -185,14 +203,14 @@
       .style("opacity", 0)
       .remove();
 
-    // Добавление - ИСПРАВЛЕННЫЙ КЛИК
+    // Добавление
     const nodeEnter = node.enter()
       .append('g')
       .attr('class', 'node')
       .attr("transform", d => `translate(${source.y0},${source.x0})`)
       .style("opacity", 0)
       .on('click', function(event, d) {
-        event.stopPropagation(); // Используем event вместо d3.event
+        event.stopPropagation();
         if (d.children) {
           d._children = d.children;
           d.children = null;
@@ -203,18 +221,32 @@
         update(d);
       });
 
-    // Кружок
+    // Кружок без фона
     nodeEnter.append('circle')
       .attr('r', 0)
       .attr('class', d => d._children ? 'collapsed' : 'expanded')
-      .attr('stroke', '#456d61')
-      .attr('stroke-width', 3);
+      .attr('stroke-width', 3)
+      .style('fill', 'white'); // Белый фон
 
-    // Текст
+    // Иконка внутри кружка
     nodeEnter.append('text')
+      .attr('class', 'node-icon')
+      .attr('dy', '0.35em')
+      .text(d => {
+        if (d.depth === 0) return '👑'; // Корень
+        if (d.depth === 1) return '⭐'; // Жүзы
+        if (d._children) return '➕'; // Свернуто
+        if (d.children) return '➖'; // Развернуто
+        return '👤'; // Лист
+      })
+      .style('opacity', 0);
+
+    // Текст ВСЕГДА СПРАВА
+    nodeEnter.append('text')
+      .attr('class', 'name')
       .attr("dy", "0.35em")
-      .attr("x", d => d._children ? -35 : 35)
-      .style("text-anchor", d => d._children ? "end" : "start")
+      .attr("x", 40) // Всегда справа от кружка
+      .style("text-anchor", "start")
       .style("font-size", d => d.depth === 0 ? "20px" : "16px")
       .style("font-weight", "bold")
       .text(d => d.data.name)
@@ -228,17 +260,33 @@
       .attr("transform", d => `translate(${d.y},${d.x})`)
       .style("opacity", 1);
 
+    // Анимация кружка
     nodeUpdate.select('circle')
       .transition()
       .duration(duration)
-      .attr('r', 25)
-      .attr('class', d => d._children ? 'collapsed' : 'expanded');
+      .attr('r', 30)
+      .attr('class', d => d._children ? 'collapsed' : 'expanded')
+      .style('stroke', d => d._children ? '#4CAF50' : '#26a69a');
 
-    nodeUpdate.select('text')
+    // Анимация иконки
+    nodeUpdate.select('.node-icon')
+      .transition()
+      .duration(duration)
+      .style('opacity', 1)
+      .text(d => {
+        if (d.depth === 0) return '👑';
+        if (d.depth === 1) return '⭐';
+        if (d._children) return '➕';
+        if (d.children) return '➖';
+        return '👤';
+      });
+
+    // Анимация текста
+    nodeUpdate.select('.name')
       .transition()
       .duration(duration)
       .style("opacity", 1)
-      .attr("x", d => d._children ? -35 : 35);
+      .attr("x", 40); // Всегда справа
 
     // ====== СВЯЗИ ======
     const link = g.selectAll('path.link')
@@ -291,7 +339,7 @@
     return path.toString();
   }
   
-  // Кнопка + тоже должна работать
+  // Кнопка +
   d3.select(".floating-btn").on("click", function() {
     alert("Добавить новый узел");
   });
