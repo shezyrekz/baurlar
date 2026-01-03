@@ -1,913 +1,182 @@
 <!DOCTYPE html>
-<html lang="kk">
+<html lang="ru">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Шежіре</title>
-    <style>
-        /* СБРОС И БАЗА */
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            -webkit-tap-highlight-color: transparent;
-        }
-        
-        body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-            background: #f5f5f7;
-            color: #1d1d1f;
-            line-height: 1.4;
-            min-height: 100vh;
-        }
-        
-        /* ВЕРХНЯЯ ПАНЕЛЬ КАК НА TUMALAS.KZ */
-        .header {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            padding: 12px 16px;
-            background: #ffffff;
-            border-bottom: 1px solid #e5e5ea;
-            position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            z-index: 1000;
-            height: 56px;
-        }
-        
-        .header-title {
-            font-size: 17px;
-            font-weight: 600;
-            color: #000;
-            flex: 1;
-            text-align: center;
-        }
-        
-        .header-left {
-            display: flex;
-            align-items: center;
-        }
-        
-        .back-button {
-            background: none;
-            border: none;
-            color: #007aff;
-            font-size: 17px;
-            padding: 8px;
-            margin-right: 8px;
-            display: none;
-        }
-        
-        .header-right {
-            display: flex;
-            align-items: center;
-        }
-        
-        .icon-button {
-            background: none;
-            border: none;
-            width: 44px;
-            height: 44px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: #007aff;
-            font-size: 20px;
-            position: relative;
-        }
-        
-        /* ОСНОВНОЙ КОНТЕНТ */
-        .main-content {
-            padding-top: 56px;
-            padding-bottom: 83px;
-            min-height: 100vh;
-        }
-        
-        /* ГЛАВНАЯ СТРАНИЦА - ТОЧНО КАК TUMALAS.KZ */
-        .home-page {
-            padding: 24px 16px;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            min-height: calc(100vh - 139px);
-        }
-        
-        .alash-button {
-            background: linear-gradient(135deg, #007aff 0%, #0056d6 100%);
-            border: none;
-            border-radius: 14px;
-            padding: 32px 40px;
-            color: white;
-            font-size: 28px;
-            font-weight: 700;
-            margin-bottom: 24px;
-            width: 100%;
-            max-width: 340px;
-            text-align: center;
-            box-shadow: 0 10px 30px rgba(0, 122, 255, 0.2);
-            transition: transform 0.2s;
-        }
-        
-        .alash-button:active {
-            transform: scale(0.98);
-        }
-        
-        .home-subtitle {
-            color: #8e8e93;
-            font-size: 15px;
-            text-align: center;
-            max-width: 280px;
-            margin-bottom: 48px;
-        }
-        
-        .home-features {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 12px;
-            width: 100%;
-            max-width: 340px;
-        }
-        
-        .feature-button {
-            background: #ffffff;
-            border: 1px solid #e5e5ea;
-            border-radius: 12px;
-            padding: 20px 16px;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            text-align: center;
-            text-decoration: none;
-            color: #1d1d1f;
-            transition: all 0.2s;
-        }
-        
-        .feature-button:active {
-            background: #f2f2f7;
-        }
-        
-        .feature-icon {
-            font-size: 28px;
-            margin-bottom: 12px;
-            color: #007aff;
-        }
-        
-        .feature-title {
-            font-size: 15px;
-            font-weight: 600;
-            margin-bottom: 4px;
-        }
-        
-        .feature-subtitle {
-            font-size: 13px;
-            color: #8e8e93;
-        }
-        
-        /* СТРАНИЦА ЖУЗОВ */
-        .zhuz-page {
-            display: none;
-            padding: 16px;
-        }
-        
-        .zhuz-page.active {
-            display: block;
-        }
-        
-        .zhuz-list {
-            margin-top: 8px;
-        }
-        
-        .zhuz-item {
-            background: #ffffff;
-            border-radius: 12px;
-            margin-bottom: 12px;
-            overflow: hidden;
-            border: 1px solid #e5e5ea;
-        }
-        
-        .zhuz-header {
-            padding: 18px 16px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            cursor: pointer;
-        }
-        
-        .zhuz-name {
-            font-size: 17px;
-            font-weight: 600;
-            color: #1d1d1f;
-        }
-        
-        .zhuz-arrow {
-            color: #c7c7cc;
-            font-size: 13px;
-            transition: transform 0.3s;
-        }
-        
-        .zhuz-arrow.open {
-            transform: rotate(180deg);
-            color: #007aff;
-        }
-        
-        .sub-zhuz-list {
-            display: none;
-            border-top: 1px solid #f2f2f7;
-        }
-        
-        .sub-zhuz-list.active {
-            display: block;
-        }
-        
-        .sub-zhuz-item {
-            padding: 16px;
-            border-bottom: 1px solid #f2f2f7;
-            cursor: pointer;
-            transition: background 0.2s;
-        }
-        
-        .sub-zhuz-item:last-child {
-            border-bottom: none;
-        }
-        
-        .sub-zhuz-item:active {
-            background: #f2f2f7;
-        }
-        
-        .sub-zhuz-name {
-            font-size: 16px;
-            font-weight: 500;
-            color: #1d1d1f;
-            margin-bottom: 4px;
-        }
-        
-        .sub-zhuz-desc {
-            font-size: 14px;
-            color: #8e8e93;
-        }
-        
-        /* ДЕТАЛЬНАЯ СТРАНИЦА */
-        .detail-page {
-            display: none;
-            position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: #f5f5f7;
-            z-index: 1001;
-        }
-        
-        .detail-page.active {
-            display: block;
-        }
-        
-        .detail-content {
-            padding: 16px;
-            padding-top: 72px;
-            overflow-y: auto;
-            height: 100%;
-        }
-        
-        .detail-card {
-            background: #ffffff;
-            border-radius: 12px;
-            padding: 20px;
-            margin-bottom: 16px;
-            border: 1px solid #e5e5ea;
-        }
-        
-        .detail-label {
-            font-size: 13px;
-            color: #8e8e93;
-            margin-bottom: 8px;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-        }
-        
-        .detail-value {
-            font-size: 17px;
-            color: #1d1d1f;
-            line-height: 1.4;
-        }
-        
-        /* НИЖНЯЯ НАВИГАЦИЯ - ТОЧНО КАК TUMALAS.KZ */
-        .tab-bar {
-            position: fixed;
-            bottom: 0;
-            left: 0;
-            right: 0;
-            background: #ffffff;
-            border-top: 1px solid #e5e5ea;
-            display: flex;
-            padding: 8px 0;
-            z-index: 1000;
-            height: 83px;
-        }
-        
-        .tab-item {
-            flex: 1;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            background: none;
-            border: none;
-            color: #8e8e93;
-            font-size: 10px;
-            padding: 8px 0;
-            position: relative;
-        }
-        
-        .tab-item.active {
-            color: #007aff;
-        }
-        
-        .tab-icon {
-            font-size: 22px;
-            margin-bottom: 4px;
-            position: relative;
-        }
-        
-        .tab-badge {
-            position: absolute;
-            top: -4px;
-            right: -4px;
-            background: #ff3b30;
-            color: white;
-            font-size: 10px;
-            padding: 2px 5px;
-            border-radius: 10px;
-            min-width: 16px;
-            text-align: center;
-        }
-        
-        /* ПОИСК */
-        .search-page {
-            display: none;
-            padding: 16px;
-            padding-top: 72px;
-        }
-        
-        .search-page.active {
-            display: block;
-        }
-        
-        .search-container {
-            position: relative;
-            margin-bottom: 20px;
-        }
-        
-        .search-input {
-            width: 100%;
-            padding: 16px 50px 16px 44px;
-            background: #ffffff;
-            border: 1px solid #e5e5ea;
-            border-radius: 10px;
-            font-size: 16px;
-            color: #1d1d1f;
-        }
-        
-        .search-input:focus {
-            outline: none;
-            border-color: #007aff;
-        }
-        
-        .search-icon {
-            position: absolute;
-            left: 16px;
-            top: 50%;
-            transform: translateY(-50%);
-            color: #8e8e93;
-            font-size: 18px;
-        }
-        
-        .search-clear {
-            position: absolute;
-            right: 16px;
-            top: 50%;
-            transform: translateY(-50%);
-            background: none;
-            border: none;
-            color: #8e8e93;
-            font-size: 18px;
-            display: none;
-        }
-        
-        /* АНИМАЦИИ */
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(10px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-        
-        .fade-in {
-            animation: fadeIn 0.3s ease;
-        }
-        
-        /* АДАПТИВ */
-        @media (max-width: 375px) {
-            .alash-button {
-                padding: 28px 32px;
-                font-size: 24px;
-            }
-            
-            .home-features {
-                grid-template-columns: 1fr;
-            }
-        }
-    </style>
+<meta charset="UTF-8">
+<title>Қазақ Шежіре</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<style>
+/* ===== Общие стили ===== */
+body {
+  margin: 0;
+  font-family: Arial, sans-serif;
+  background: #0a0a0a;
+  color: #fff;
+}
+header {
+  background: #111;
+  text-align: center;
+  padding: 15px;
+  font-size: 18px;
+  border-bottom: 1px solid #222;
+}
+
+/* ===== Навигация ===== */
+nav {
+  display: flex;
+  justify-content: space-around;
+  background: #111;
+  border-bottom: 1px solid #222;
+}
+nav button {
+  flex: 1;
+  padding: 12px;
+  background: none;
+  border: none;
+  color: #aaa;
+  font-size: 14px;
+  cursor: pointer;
+  transition: 0.3s;
+}
+nav button:hover {
+  color: gold;
+}
+
+/* ===== Контент ===== */
+#app {
+  padding: 20px;
+}
+.card-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill,minmax(140px,1fr));
+  gap: 15px;
+  margin-top: 20px;
+}
+.card {
+  background: #111;
+  border: 1px solid #222;
+  padding: 12px;
+  cursor: pointer;
+  text-align: center;
+  transition: 0.3s;
+}
+.card:hover {
+  border-color: gold;
+  transform: scale(1.03);
+}
+.back {
+  margin-top: 15px;
+  color: #00aaff;
+  cursor: pointer;
+  font-size: 14px;
+}
+.fade {
+  animation: fadeIn 0.3s ease;
+}
+@keyframes fadeIn {
+  from {opacity:0; transform: translateY(10px);}
+  to {opacity:1; transform: translateY(0);}
+}
+</style>
 </head>
+
 <body>
-    <!-- ВЕРХНЯЯ ПАНЕЛЬ КАК НА TUMALAS.KZ -->
-    <div class="header">
-        <div class="header-left">
-            <button class="back-button" id="backButton">←</button>
-        </div>
-        
-        <div class="header-title" id="headerTitle">Шежіре</div>
-        
-        <div class="header-right">
-            <button class="icon-button" id="searchIcon">🔍</button>
-            <button class="icon-button" id="menuIcon">⋮</button>
-        </div>
-    </div>
-    
-    <!-- ОСНОВНОЙ КОНТЕНТ -->
-    <div class="main-content">
-        <!-- ГЛАВНАЯ СТРАНИЦА -->
-        <div class="home-page" id="homePage">
-            <button class="alash-button" id="alashButton">
-                Алаш
-            </button>
-            
-            <div class="home-subtitle">
-                Ұлы жүз, Орта жүз, Кіші жүз және Жүзден тыс рулар
-            </div>
-            
-            <div class="home-features">
-                <button class="feature-button" onclick="showPage('tree')">
-                    <div class="feature-icon">🌳</div>
-                    <div class="feature-title">Шежіре ағашы</div>
-                    <div class="feature-subtitle">Рулардың байланысы</div>
-                </button>
-                
-                <button class="feature-button" onclick="showPage('map')">
-                    <div class="feature-icon">🗺️</div>
-                    <div class="feature-title">Карта</div>
-                    <div class="feature-subtitle">Рулардың орналасуы</div>
-                </button>
-                
-                <button class="feature-button" onclick="showPage('history')">
-                    <div class="feature-icon">📜</div>
-                    <div class="feature-title">Тарих</div>
-                    <div class="feature-subtitle">Қазақ рулары тарихы</div>
-                </button>
-                
-                <button class="feature-button" onclick="showPage('about')">
-                    <div class="feature-icon">ℹ️</div>
-                    <div class="feature-title">Туралы</div>
-                    <div class="feature-subtitle">Сайт туралы ақпарат</div>
-                </button>
-            </div>
-        </div>
-        
-        <!-- СТРАНИЦА ЖУЗОВ -->
-        <div class="zhuz-page" id="zhuzPage">
-            <div class="zhuz-list">
-                <!-- Ұлы жүз -->
-                <div class="zhuz-item" onclick="toggleZhuz('uly')">
-                    <div class="zhuz-header">
-                        <div class="zhuz-name">Ұлы жүз</div>
-                        <div class="zhuz-arrow">▼</div>
-                    </div>
-                    <div class="sub-zhuz-list" id="ulyList">
-                        <div class="sub-zhuz-item" data-ru="Дулат">
-                            <div class="sub-zhuz-name">Дулат</div>
-                            <div class="sub-zhuz-desc">Ботбай, Шымыр, Жақсылық</div>
-                        </div>
-                        <div class="sub-zhuz-item" data-ru="Жалайыр">
-                            <div class="sub-zhuz-name">Жалайыр</div>
-                            <div class="sub-zhuz-desc">Құрман, Қалпе, Байқара</div>
-                        </div>
-                        <div class="sub-zhuz-item" data-ru="Албан">
-                            <div class="sub-zhuz-name">Албан</div>
-                            <div class="sub-zhuz-desc">Шеген, Қара, Сары</div>
-                        </div>
-                        <div class="sub-zhuz-item" data-ru="Суан">
-                            <div class="sub-zhuz-name">Суан</div>
-                            <div class="sub-zhuz-desc">Бактияр, Қожа, Бөрік</div>
-                        </div>
-                    </div>
-                </div>
-                
-                <!-- Орта жүз -->
-                <div class="zhuz-item" onclick="toggleZhuz('orta')">
-                    <div class="zhuz-header">
-                        <div class="zhuz-name">Орта жүз</div>
-                        <div class="zhuz-arrow">▼</div>
-                    </div>
-                    <div class="sub-zhuz-list" id="ortaList">
-                        <div class="sub-zhuz-item" data-ru="Арғын">
-                            <div class="sub-zhuz-name">Арғын</div>
-                            <div class="sub-zhuz-desc">Қуандық, Сүйіндік, Қаракесек</div>
-                        </div>
-                        <div class="sub-zhuz-item" data-ru="Найман">
-                            <div class="sub-zhuz-name">Найман</div>
-                            <div class="sub-zhuz-desc">Садыр, Матай, Қаратай</div>
-                        </div>
-                        <div class="sub-zhuz-item" data-ru="Керей">
-                            <div class="sub-zhuz-name">Керей</div>
-                            <div class="sub-zhuz-desc">Абақ, Жастабан, Сары</div>
-                        </div>
-                        <div class="sub-zhuz-item" data-ru="Қоңырат">
-                            <div class="sub-zhuz-name">Қоңырат</div>
-                            <div class="sub-zhuz-desc">Ақнайман, Қаранайман, Тортай</div>
-                        </div>
-                    </div>
-                </div>
-                
-                <!-- Кіші жүз -->
-                <div class="zhuz-item" onclick="toggleZhuz('kishi')">
-                    <div class="zhuz-header">
-                        <div class="zhuz-name">Кіші жүз</div>
-                        <div class="zhuz-arrow">▼</div>
-                    </div>
-                    <div class="sub-zhuz-list" id="kishiList">
-                        <div class="sub-zhuz-item" data-ru="Әлімұлы">
-                            <div class="sub-zhuz-name">Әлімұлы</div>
-                            <div class="sub-zhuz-desc">Қарасақал, Шомекей, Тортқара</div>
-                        </div>
-                        <div class="sub-zhuz-item" data-ru="Байұлы">
-                            <div class="sub-zhuz-name">Байұлы</div>
-                            <div class="sub-zhuz-desc">Адай, Алаша, Байбақты</div>
-                        </div>
-                        <div class="sub-zhuz-item" data-ru="Жетіру">
-                            <div class="sub-zhuz-name">Жетіру</div>
-                            <div class="sub-zhuz-desc">Табын, Тама, Кердери</div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-        
-        <!-- СТРАНИЦА ПОИСКА -->
-        <div class="search-page" id="searchPage">
-            <div class="search-container">
-                <input type="text" class="search-input" placeholder="Ру атын іздеу..." id="searchInput">
-                <div class="search-icon">🔍</div>
-                <button class="search-clear" id="searchClear">×</button>
-            </div>
-            <div id="searchResults"></div>
-        </div>
-    </div>
-    
-    <!-- ДЕТАЛЬНАЯ СТРАНИЦА -->
-    <div class="detail-page" id="detailPage">
-        <div class="header">
-            <div class="header-left">
-                <button class="back-button" id="detailBackButton">←</button>
-            </div>
-            <div class="header-title" id="detailTitle">Дулат</div>
-            <div class="header-right"></div>
-        </div>
-        
-        <div class="detail-content" id="detailContent">
-            <!-- Заполнится JavaScript -->
-        </div>
-    </div>
-    
-    <!-- НИЖНЯЯ НАВИГАЦИЯ КАК НА TUMALAS.KZ -->
-    <div class="tab-bar">
-        <button class="tab-item active" onclick="showTab('home')">
-            <div class="tab-icon">🏠</div>
-            Басты
-        </button>
-        
-        <button class="tab-item" onclick="showTab('zhuz')">
-            <div class="tab-icon">📋</div>
-            Жүздер
-        </button>
-        
-        <button class="tab-item" onclick="showTab('tree')">
-            <div class="tab-icon">🌳</div>
-            Ағаш
-        </button>
-        
-        <button class="tab-item" onclick="showTab('search')">
-            <div class="tab-icon">🔍</div>
-            Іздеу
-        </button>
-        
-        <button class="tab-item" onclick="showTab('profile')">
-            <div class="tab-icon">👤</div>
-            Профиль
-        </button>
-    </div>
 
-    <script>
-        // БАЗА ДАННЫХ
-        const ruDatabase = {
-            'Дулат': {
-                zhuz: 'Ұлы жүз',
-                atalary: 'Ботбай, Шымыр, Жақсылық, Ысты, Албан, Суан, Шапырашты',
-                tarihy: 'Дулат руы - Ұлы жүздің ең үлкен руларының бірі. Тарихта белгілі тұлғалары: Байдібек батыр, Балпық би, Шоқан Уәлиханов.',
-                regions: 'Оңтүстік Қазақстан, Жамбыл облыстары',
-                notable: 'Шоқан Уәлиханов, Ильяс Жансүгіров, Қаныш Сәтбаев'
-            },
-            'Жалайыр': {
-                zhuz: 'Ұлы жүз',
-                atalary: 'Құрман, Қалпе, Байқара, Балталы, Сары, Мырза, Жақып',
-                tarihy: 'Жалайыр - көне қазақ руы. Моңғол шапқыншылығына дейінгі тарихы бар.',
-                regions: 'Алматы, Жетісу облыстары',
-                notable: 'Абылай хан'
-            },
-            'Арғын': {
-                zhuz: 'Орта жүз',
-                atalary: 'Қуандық, Сүйіндік, Қаракесек, Тобықты, Шеген, Кіші жүз, Мырза',
-                tarihy: 'Арғын - Орта жүздің ең ірі руы. Қазақ хандығының құрылуына белсенді қатысқан.',
-                regions: 'Қарағанды, Ақмола, Павлодар облыстары',
-                notable: 'Абай Құнанбаев, Міржақып Дулатов'
-            }
-        };
+<header>Қазақ Шежіре</header>
 
-        // ЭЛЕМЕНТЫ
-        const homePage = document.getElementById('homePage');
-        const zhuzPage = document.getElementById('zhuzPage');
-        const searchPage = document.getElementById('searchPage');
-        const detailPage = document.getElementById('detailPage');
-        const backButton = document.getElementById('backButton');
-        const headerTitle = document.getElementById('headerTitle');
-        const searchIcon = document.getElementById('searchIcon');
-        const menuIcon = document.getElementById('menuIcon');
-        const alashButton = document.getElementById('alashButton');
-        const searchInput = document.getElementById('searchInput');
-        const searchClear = document.getElementById('searchClear');
-        const searchResults = document.getElementById('searchResults');
-        const detailBackButton = document.getElementById('detailBackButton');
-        const detailTitle = document.getElementById('detailTitle');
-        const detailContent = document.getElementById('detailContent');
-        const tabItems = document.querySelectorAll('.tab-item');
+<nav id="menu"></nav>
 
-        // ИНИЦИАЛИЗАЦИЯ
-        document.addEventListener('DOMContentLoaded', function() {
-            showPage('home');
-            updateHeader('home');
-        });
+<div id="app"></div>
 
-        // ПОКАЗАТЬ СТРАНИЦУ
-        function showPage(page) {
-            // Скрыть все страницы
-            homePage.style.display = 'none';
-            zhuzPage.style.display = 'none';
-            searchPage.style.display = 'none';
-            detailPage.classList.remove('active');
-            
-            // Показать нужную страницу
-            if (page === 'home') {
-                homePage.style.display = 'flex';
-                backButton.style.display = 'none';
-                headerTitle.textContent = 'Шежіре';
-                updateTabs('home');
-            } else if (page === 'zhuz') {
-                zhuzPage.style.display = 'block';
-                zhuzPage.classList.add('fade-in');
-                backButton.style.display = 'flex';
-                headerTitle.textContent = 'Алаш';
-                updateTabs('zhuz');
-                // Автооткрытие первого жуза
-                setTimeout(() => toggleZhuz('uly', true), 100);
-            } else if (page === 'search') {
-                searchPage.style.display = 'block';
-                searchPage.classList.add('fade-in');
-                backButton.style.display = 'flex';
-                headerTitle.textContent = 'Іздеу';
-                updateTabs('search');
-                searchInput.focus();
-            } else if (['tree', 'map', 'history', 'about'].includes(page)) {
-                alert(`"${getPageTitle(page)}" беті жақын арада қосылады`);
-                showPage('home');
-            }
-        }
+<script>
+let DATA = {};
+let path = [];
 
-        // КНОПКА АЛАШ
-        alashButton.addEventListener('click', function() {
-            showPage('zhuz');
-        });
+// Загружаем JSON с данными
+fetch('data.json')
+  .then(res => res.json())
+  .then(json => {
+    DATA = json;
+    renderMenu();
+  })
+  .catch(err => {
+    document.getElementById('app').innerText = 'Ошибка загрузки данных';
+  });
 
-        // КНОПКА НАЗАД
-        backButton.addEventListener('click', function() {
-            if (zhuzPage.style.display === 'block') {
-                showPage('home');
-            } else if (searchPage.style.display === 'block') {
-                showPage('home');
-            }
-        });
+// Создаем кнопки жузов
+function renderMenu() {
+  const menu = document.getElementById('menu');
+  menu.innerHTML = '';
+  Object.keys(DATA).forEach(juz => {
+    const btn = document.createElement('button');
+    btn.textContent = juz;
+    btn.onclick = () => openJuz(juz);
+    menu.appendChild(btn);
+  });
+  document.getElementById('app').innerHTML = '<p>Выберите жуз</p>';
+}
 
-        // ИКОНКА ПОИСКА
-        searchIcon.addEventListener('click', function() {
-            showPage('search');
-        });
+// Рендер карточек
+function renderCards(title, items, onClick) {
+  const app = document.getElementById('app');
+  app.classList.remove('fade');
+  void app.offsetWidth;
+  app.classList.add('fade');
 
-        // ИКОНКА МЕНЮ
-        menuIcon.addEventListener('click', function() {
-            alert('Басқару панелі жақын арада қосылады');
-        });
+  app.innerHTML = `<h3>${title}</h3><div class="card-grid"></div>`;
+  const grid = app.querySelector('.card-grid');
 
-        // ОТКРЫТЬ/ЗАКРЫТЬ ЖУЗ
-        function toggleZhuz(zhuzId, forceOpen = false) {
-            const list = document.getElementById(zhuzId + 'List');
-            const arrow = document.querySelector(`#${zhuzId}Zhuz .zhuz-arrow`);
-            
-            if (forceOpen) {
-                list.classList.add('active');
-                arrow.classList.add('open');
-                return;
-            }
-            
-            const isOpen = list.classList.contains('active');
-            
-            // Закрыть другие
-            document.querySelectorAll('.sub-zhuz-list.active').forEach(item => {
-                if (item !== list) {
-                    item.classList.remove('active');
-                    item.parentElement.querySelector('.zhuz-arrow').classList.remove('open');
-                }
-            });
-            
-            // Переключить текущий
-            if (isOpen) {
-                list.classList.remove('active');
-                arrow.classList.remove('open');
-            } else {
-                list.classList.add('active');
-                arrow.classList.add('open');
-            }
-        }
+  items.forEach(item => {
+    const div = document.createElement('div');
+    div.className = 'card';
+    div.textContent = item;
+    div.onclick = () => onClick(item);
+    grid.appendChild(div);
+  });
 
-        // КЛИК НА РОД
-        document.querySelectorAll('.sub-zhuz-item').forEach(item => {
-            item.addEventListener('click', function() {
-                const ruName = this.getAttribute('data-ru');
-                showRuDetail(ruName);
-            });
-        });
+  if (path.length > 1) {
+    const back = document.createElement('div');
+    back.className = 'back';
+    back.textContent = '← Назад';
+    back.onclick = goBack;
+    app.appendChild(back);
+  }
+}
 
-        // ПОКАЗАТЬ ДЕТАЛЬНУЮ ИНФОРМАЦИЮ
-        function showRuDetail(ruName) {
-            detailTitle.textContent = ruName;
-            
-            if (ruDatabase[ruName]) {
-                const data = ruDatabase[ruName];
-                detailContent.innerHTML = `
-                    <div class="detail-card">
-                        <div class="detail-label">Жүзі</div>
-                        <div class="detail-value">${data.zhuz}</div>
-                    </div>
-                    
-                    <div class="detail-card">
-                        <div class="detail-label">Негізгі аталары</div>
-                        <div class="detail-value">${data.atalary}</div>
-                    </div>
-                    
-                    <div class="detail-card">
-                        <div class="detail-label">Тарихы</div>
-                        <div class="detail-value">${data.tarihy}</div>
-                    </div>
-                    
-                    <div class="detail-card">
-                        <div class="detail-label">Негізгі аймақтары</div>
-                        <div class="detail-value">${data.regions}</div>
-                    </div>
-                    
-                    <div class="detail-card">
-                        <div class="detail-label">Танымал тұлғалары</div>
-                        <div class="detail-value">${data.notable}</div>
-                    </div>
-                `;
-            } else {
-                detailContent.innerHTML = `
-                    <div class="detail-card">
-                        <div class="detail-label">Ақпарат</div>
-                        <div class="detail-value">
-                            Бұл ру туралы ақпарат әлі толық емес.<br>
-                            Жақын арада толықтырылады.
-                        </div>
-                    </div>
-                `;
-            }
-            
-            detailPage.classList.add('active');
-        }
+// Открываем жуз
+function openJuz(juz) {
+  path = [juz];
+  const rods = Object.keys(DATA[juz].Роды);
+  renderCards(juz, rods, openRod);
+}
 
-        // КНОПКА НАЗАД НА ДЕТАЛЬНОЙ СТРАНИЦЕ
-        detailBackButton.addEventListener('click', function() {
-            detailPage.classList.remove('active');
-        });
+// Открываем род
+function openRod(rod) {
+  path.push(rod);
+  const people = DATA[path[0]].Роды[rod];
+  renderCards(path.join(' → '), people, openPerson);
+}
 
-        // ПОИСК
-        searchInput.addEventListener('input', function() {
-            const query = this.value.toLowerCase().trim();
-            searchClear.style.display = query ? 'block' : 'none';
-            
-            if (!query) {
-                searchResults.innerHTML = '';
-                return;
-            }
-            
-            let html = '';
-            for (const [ruName, data] of Object.entries(ruDatabase)) {
-                if (ruName.toLowerCase().includes(query) || 
-                    data.zhuz.toLowerCase().includes(query) ||
-                    data.atalary.toLowerCase().includes(query)) {
-                    
-                    html += `
-                        <div class="sub-zhuz-item" onclick="showRuDetail('${ruName}')">
-                            <div class="sub-zhuz-name">${ruName}</div>
-                            <div class="sub-zhuz-desc">${data.zhuz} • ${data.atalary.substring(0, 30)}...</div>
-                        </div>
-                    `;
-                }
-            }
-            
-            if (html) {
-                searchResults.innerHTML = html;
-            } else {
-                searchResults.innerHTML = `
-                    <div class="detail-card" style="text-align: center; padding: 40px 20px;">
-                        <div style="font-size: 48px; margin-bottom: 20px;">🔍</div>
-                        <div class="detail-value">"${query}" бойынша нәтиже табылмады</div>
-                    </div>
-                `;
-            }
-        });
+// Открываем человека
+function openPerson(name) {
+  path.push(name);
+  const app = document.getElementById('app');
+  app.classList.remove('fade');
+  void app.offsetWidth;
+  app.classList.add('fade');
 
-        // ОЧИСТИТЬ ПОИСК
-        searchClear.addEventListener('click', function() {
-            searchInput.value = '';
-            searchClear.style.display = 'none';
-            searchResults.innerHTML = '';
-            searchInput.focus();
-        });
+  app.innerHTML = `<h3>${path.join(' → ')}</h3>
+  <p>Информация о ${name} здесь</p>
+  <div class="back" onclick="goBack()">← Назад</div>`;
+}
 
-        // ОБНОВИТЬ ЗАГОЛОВОК
-        function updateHeader(page) {
-            const titles = {
-                'home': 'Шежіре',
-                'zhuz': 'Алаш',
-                'search': 'Іздеу',
-                'tree': 'Шежіре ағашы',
-                'map': 'Карта',
-                'history': 'Тарих',
-                'about': 'Туралы'
-            };
-            headerTitle.textContent = titles[page] || 'Шежіре';
-        }
+// Назад
+function goBack() {
+  path.pop();
+  if (path.length === 1) openJuz(path[0]);
+  else if (path.length === 2) openRod(path[1]);
+}
 
-        // ОБНОВИТЬ ВКЛАДКИ
-        function updateTabs(page) {
-            tabItems.forEach(item => item.classList.remove('active'));
-            
-            const tabMap = {
-                'home': tabItems[0],
-                'zhuz': tabItems[1],
-                'tree': tabItems[2],
-                'search': tabItems[3],
-                'profile': tabItems[4]
-            };
-            
-            if (tabMap[page]) {
-                tabMap[page].classList.add('active');
-            }
-        }
-
-        // НИЖНЯЯ НАВИГАЦИЯ
-        function showTab(tab) {
-            if (tab === 'home') {
-                showPage('home');
-            } else if (tab === 'zhuz') {
-                showPage('zhuz');
-            } else if (tab === 'tree') {
-                showPage('tree');
-            } else if (tab === 'search') {
-                showPage('search');
-            } else if (tab === 'profile') {
-                alert('Профиль жақын арада қосылады');
-            }
-        }
-
-        // ПОЛУЧИТЬ НАЗВАНИЕ СТРАНИЦЫ
-        function getPageTitle(page) {
-            const titles = {
-                'tree': 'Шежіре ағашы',
-                'map': 'Карта',
-                'history': 'Тарих',
-                'about': 'Туралы'
-            };
-            return titles[page] || page;
-        }
-    </script>
+</script>
 </body>
 </html>
