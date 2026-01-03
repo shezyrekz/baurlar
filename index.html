@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="kk">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Шежіре - Қазақ шежіресі</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&family=Noto+Sans+Arabic:wght@400;500;600&display=swap" rel="stylesheet">
+</head>
+<body>
+    <!-- Навигация -->
+    <nav class="navbar">
+        <div class="container nav-container">
+            <a href="index.html" class="logo">
+                <i class="fas fa-tree"></i>
+                <span>Шежіре</span>
+            </a>
+            
+            <div class="nav-links">
+                <a href="#about">Туралы</a>
+                <a href="#zhuzlar">Жүздер</a>
+                <a href="#tree">Шежіре ағашы</a>
+                <a href="#search">Іздеу</a>
+            </div>
+            
+            <button class="language-switcher">
+                <i class="fas fa-globe"></i>
+                <span>ҚАЗ</span>
+            </button>
+        </div>
+    </nav>
+
+    <!-- Герой-секция -->
+    <section class="hero">
+        <div class="container">
+            <h1 class="hero-title">
+                <span class="highlight">ҚАЗАҚ</span> РУЛАРЫНЫҢ ШЕЖІРЕСІ
+            </h1>
+            <p class="hero-subtitle">
+                Ұлы жүз, Орта жүз, Кіші жүз және Жүзден тыс рулардың тарихы мен шежіресі
+            </p>
+            <a href="#zhuzlar" class="cta-button">
+                Жүздерді зерттеу
+                <i class="fas fa-arrow-right"></i>
+            </a>
+        </div>
+    </section>
+
+    <!-- Жүздер секция -->
+    <section id="zhuzlar" class="zhuz-section">
+        <div class="container">
+            <h2 class="section-title">ҚАЗАҚ ЖҮЗДЕРІ</h2>
+            <p class="section-subtitle">Ұлы жүз (үлкен), Орта жүз (орта), Кіші жүз (кіші)</p>
+            
+            <div class="zhuz-cards">
+                <!-- Ұлы жүз -->
+                <div class="zhuz-card">
+                    <div class="zhuz-icon" style="background: linear-gradient(135deg, #4CAF50, #2E7D32);">
+                        <i class="fas fa-mountain"></i>
+                    </div>
+                    <h3>ҰЛЫ ЖҮЗ</h3>
+                    <p>Оңтүстік пен оңтүстік-шығыс аймақтары. Дулат, Жалайыр, Албан, т.б.</p>
+                    <a href="zhuz-pages/uly-zhuz.html" class="zhuz-link">
+                        Толығырақ <i class="fas fa-chevron-right"></i>
+                    </a>
+                </div>
+                
+                <!-- Орта жүз -->
+                <div class="zhuz-card">
+                    <div class="zhuz-icon" style="background: linear-gradient(135deg, #2196F3, #0D47A1);">
+                        <i class="fas fa-water"></i>
+                    </div>
+                    <h3>ОРТА ЖҮЗ</h3>
+                    <p>Орталық және солтүстік аймақтары. Арғын, Найман, Керей, т.б.</p>
+                    <a href="zhuz-pages/orta-zhuz.html" class="zhuz-link">
+                        Толығырақ <i class="fas fa-chevron-right"></i>
+                    </a>
+                </div>
+                
+                <!-- Кіші жүз -->
+                <div class="zhuz-card">
+                    <div class="zhuz-icon" style="background: linear-gradient(135deg, #FF9800, #EF6C00);">
+                        <i class="fas fa-sun"></i>
+                    </div>
+                    <h3>КІШІ ЖҮЗ</h3>
+                    <p>Батыс аймақтары. Әлімұлы, Байұлы, Жетіру, т.б.</p>
+                    <a href="zhuz-pages/kishi-zhuz.html" class="zhuz-link">
+                        Толығырақ <i class="fas fa-chevron-right"></i>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Шежіре ағашы -->
+    <section id="tree" class="tree-section">
+        <div class="container">
+            <h2 class="section-title">ШЕЖІРЕ АҒАШЫ</h2>
+            <div class="tree-container">
+                <div class="tree">
+                    <!-- Дерево будет отрисовано через JavaScript -->
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Поиск -->
+    <section id="search" class="search-section">
+        <div class="container">
+            <h2 class="section-title">РУЛАРДЫ ІЗДЕУ</h2>
+            <div class="search-box">
+                <input type="text" id="searchInput" placeholder="Ру атын енгізіңіз...">
+                <button id="searchButton">
+                    <i class="fas fa-search"></i> Іздеу
+                </button>
+            </div>
+            <div id="searchResults" class="search-results"></div>
+        </div>
+    </section>
+
+    <!-- Футер -->
+    <footer>
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-section">
+                    <h3>Шежіре</h3>
+                    <p>Қазақ халқының тарихы мен мәдениетін сақтауға арналған платформа.</p>
+                </div>
+                <div class="footer-section">
+                    <h3>Байланыс</h3>
+                    <p><i class="fas fa-envelope"></i> info@shejire.kz</p>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2024 Шежіре. Барлық құқықтар сақталған.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script src="script.js"></script>
+</body>
+</html>
