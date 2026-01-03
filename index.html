@@ -10,63 +10,55 @@
 body {
   margin: 0;
   font-family: Arial, sans-serif;
-  background: #0a0a0a;
-  color: #fff;
+  background: #f9f9f9;
+  color: #111;
 }
 header {
-  background: #111;
+  background: #fff;
   text-align: center;
   padding: 15px;
-  font-size: 18px;
-  border-bottom: 1px solid #222;
-}
-
-/* ===== Навигация ===== */
-nav {
-  display: flex;
-  justify-content: space-around;
-  background: #111;
-  border-bottom: 1px solid #222;
-}
-nav button {
-  flex: 1;
-  padding: 12px;
-  background: none;
-  border: none;
-  color: #aaa;
-  font-size: 14px;
-  cursor: pointer;
-  transition: 0.3s;
-}
-nav button:hover {
-  color: gold;
+  font-size: 20px;
+  font-weight: bold;
+  border-bottom: 1px solid #ddd;
+  position: sticky;
+  top: 0;
+  z-index: 100;
 }
 
 /* ===== Контент ===== */
 #app {
   padding: 20px;
+  display: flex;
+  justify-content: center;
+  flex-direction: column;
+  align-items: center;
+  animation: fadeIn 0.3s ease;
 }
 .card-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill,minmax(140px,1fr));
   gap: 15px;
   margin-top: 20px;
+  justify-items: center;
 }
 .card {
-  background: #111;
-  border: 1px solid #222;
+  background: #fff;
+  border: 1px solid #ddd;
   padding: 12px;
   cursor: pointer;
   text-align: center;
   transition: 0.3s;
+  width: 140px;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.1);
 }
 .card:hover {
-  border-color: gold;
+  border-color: #0077ff;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.2);
   transform: scale(1.03);
 }
 .back {
   margin-top: 15px;
-  color: #00aaff;
+  color: #0077ff;
   cursor: pointer;
   font-size: 14px;
 }
@@ -84,8 +76,6 @@ nav button:hover {
 
 <header>Қазақ Шежіре</header>
 
-<nav id="menu"></nav>
-
 <div id="app"></div>
 
 <script>
@@ -97,30 +87,17 @@ fetch('data.json')
   .then(res => res.json())
   .then(json => {
     DATA = json;
-    renderMenu();
+    renderJuzes();
   })
   .catch(err => {
     document.getElementById('app').innerText = 'Ошибка загрузки данных';
   });
 
-// Создаем кнопки жузов
-function renderMenu() {
-  const menu = document.getElementById('menu');
-  menu.innerHTML = '';
-  Object.keys(DATA).forEach(juz => {
-    const btn = document.createElement('button');
-    btn.textContent = juz;
-    btn.onclick = () => openJuz(juz);
-    menu.appendChild(btn);
-  });
-  document.getElementById('app').innerHTML = '<p>Выберите жуз</p>';
-}
-
 // Рендер карточек
 function renderCards(title, items, onClick) {
   const app = document.getElementById('app');
   app.classList.remove('fade');
-  void app.offsetWidth;
+  void app.offsetWidth; // для перезапуска анимации
   app.classList.add('fade');
 
   app.innerHTML = `<h3>${title}</h3><div class="card-grid"></div>`;
@@ -143,21 +120,28 @@ function renderCards(title, items, onClick) {
   }
 }
 
-// Открываем жуз
+// Начальный экран — жузы
+function renderJuzes() {
+  path = [];
+  const juzes = Object.keys(DATA);
+  renderCards('Выберите жуз', juzes, openJuz);
+}
+
+// Открываем жуз → список родов
 function openJuz(juz) {
   path = [juz];
   const rods = Object.keys(DATA[juz].Роды);
   renderCards(juz, rods, openRod);
 }
 
-// Открываем род
+// Открываем род → список людей
 function openRod(rod) {
   path.push(rod);
   const people = DATA[path[0]].Роды[rod];
   renderCards(path.join(' → '), people, openPerson);
 }
 
-// Открываем человека
+// Открываем человека → информация
 function openPerson(name) {
   path.push(name);
   const app = document.getElementById('app');
@@ -170,13 +154,14 @@ function openPerson(name) {
   <div class="back" onclick="goBack()">← Назад</div>`;
 }
 
-// Назад
+// Кнопка назад
 function goBack() {
   path.pop();
-  if (path.length === 1) openJuz(path[0]);
+  if (path.length === 0) renderJuzes();
+  else if (path.length === 1) openJuz(path[0]);
   else if (path.length === 2) openRod(path[1]);
 }
-
 </script>
+
 </body>
 </html>
