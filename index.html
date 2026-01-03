@@ -2,7 +2,7 @@
 <html lang="ru">
 <head>
 <meta charset="UTF-8">
-<title>Шежіре (копия интерфейса)</title>
+<title>Қазақ Шежіре</title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
 <style>
@@ -16,110 +16,121 @@ header {
   background: #222;
   color: #fff;
   text-align: center;
-  padding: 15px;
-  font-size: 18px;
+  padding: 14px;
 }
 nav {
   display: flex;
   justify-content: space-around;
-  background: #444;
-  padding: 10px 0;
+  background: #333;
 }
 nav button {
+  flex: 1;
+  padding: 12px;
   background: none;
-  color: #fff;
   border: none;
-  font-size: 16px;
-  cursor: pointer;
+  color: #fff;
+  font-size: 14px;
 }
 nav button:hover {
-  color: gold;
+  background: #444;
 }
-.content {
-  padding: 20px;
+#app {
+  padding: 15px;
+  animation: fade 0.3s;
 }
-.list {
-  list-style: none;
-  padding: 0;
-  margin: 0;
-}
-.list li {
-  padding: 10px;
+.item {
+  padding: 12px;
   border-bottom: 1px solid #eee;
   cursor: pointer;
 }
-.list li:hover {
-  background: #f9f9f9;
+.item:hover {
+  background: #f5f5f5;
 }
 .back {
-  margin: 15px 0;
+  margin-top: 15px;
   color: #0077ff;
   cursor: pointer;
+}
+@keyframes fade {
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: translateY(0); }
 }
 </style>
 </head>
 
 <body>
 
-<header>Қазақ шежіре (копия)</header>
+<header>Қазақ Шежіре</header>
 
-<nav>
-  <button onclick="showRoot('Алаш')">Алаш</button>
-  <button onclick="showRoot('Ұлы жүз')">Ұлы жүз</button>
-  <button onclick="showRoot('Орта жүз')">Орта жүз</button>
-  <button onclick="showRoot('Кіші жүз')">Кіші жүз</button>
-</nav>
+<nav id="menu"></nav>
 
-<div class="content" id="app"></div>
+<div id="app">Загрузка...</div>
 
 <script>
-// Здесь будет текущий путь
-let state = [];
+let DATA = {};
+let path = [];
 
-function renderList(title, items) {
+fetch('data.json')
+  .then(res => res.json())
+  .then(json => {
+    DATA = json;
+    renderMenu();
+  });
+
+function renderMenu() {
+  const menu = document.getElementById('menu');
+  menu.innerHTML = '';
+  Object.keys(DATA).forEach(juz => {
+    const btn = document.createElement('button');
+    btn.textContent = juz;
+    btn.onclick = () => openJuz(juz);
+    menu.appendChild(btn);
+  });
+}
+
+function render(title, items, onClick) {
+  const app = document.getElementById('app');
+  app.innerHTML = `<h3>${title}</h3>`;
+  items.forEach(item => {
+    const div = document.createElement('div');
+    div.className = 'item';
+    div.textContent = item;
+    div.onclick = () => onClick(item);
+    app.appendChild(div);
+  });
+  if (path.length > 1) {
+    const back = document.createElement('div');
+    back.className = 'back';
+    back.textContent = '← Назад';
+    back.onclick = goBack;
+    app.appendChild(back);
+  }
+}
+
+function openJuz(juz) {
+  path = [juz];
+  render(juz, Object.keys(DATA[juz].Роды), openRod);
+}
+
+function openRod(rod) {
+  path.push(rod);
+  render(path.join(' → '), DATA[path[0]].Роды[rod], openPerson);
+}
+
+function openPerson(name) {
+  path.push(name);
   const app = document.getElementById('app');
   app.innerHTML = `
-    <h3>${title}</h3>
-    <ul class="list">
-      ${items.map(i => `<li onclick="openNode('${i}')">${i}</li>`).join('')}
-    </ul>
-    ${state.length > 1 ? '<div class="back" onclick="goBack()">← Назад</div>' : ''}
+    <h3>${path.join(' → ')}</h3>
+    <p>Здесь можно добавить биографию</p>
+    <div class="back" onclick="goBack()">← Назад</div>
   `;
 }
 
-// Показать корень (жуз)
-function showRoot(root) {
-  state = [root];
-  // здесь можно подгружать реальные данные
-  // для примера оставлено стационарно
-  renderList(root, [
-    'Род 1',
-    'Род 2',
-    'Род 3'
-  ]);
-}
-
-function openNode(name) {
-  state.push(name);
-  // имитация подзапроса
-  renderList(state.join(' → '), [
-    'Имя А',
-    'Имя Б',
-    'Имя В'
-  ]);
-}
-
 function goBack() {
-  state.pop();
-  if (state.length === 1) {
-    showRoot(state[0]);
-  } else {
-    renderList(state.join(' → '), [
-      'Имя А',
-      'Имя Б',
-      'Имя В'
-    ]);
-  }
+  path.pop();
+  if (path.length === 1) openJuz(path[0]);
+  else if (path.length === 2) openRod(path[1]);
 }
 </script>
 
