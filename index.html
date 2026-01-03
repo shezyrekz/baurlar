@@ -3,31 +3,36 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>Интерактивное генеалогическое дерево</title>
+<title>Шежіре</title>
 <style>
   body {
     margin: 0;
     font-family: Arial, sans-serif;
     background: #f6f1d1;
   }
+  /* УВЕЛИЧИЛ ВЕРХНЮЮ ПАНЕЛЬ */
   header {
     background: #009688;
     color: white;
-    height: 50px;
+    height: 70px; /* Увеличено с 50px до 70px */
     display: flex;
     align-items: center;
-    padding: 0 15px;
-    gap: 20px;
+    padding: 0 25px; /* Увеличено с 15px до 25px */
+    gap: 30px; /* Увеличено с 20px до 30px */
   }
   header .icon {
     cursor: pointer;
-    font-size: 24px;
+    font-size: 32px; /* Увеличено с 24px до 32px */
     user-select: none;
+    transition: transform 0.2s; /* Добавил плавный эффект */
+  }
+  header .icon:hover {
+    transform: scale(1.1); /* Легкое увеличение при наведении */
   }
   #tree {
     padding: 20px;
     overflow: auto;
-    height: calc(100vh - 50px);
+    height: calc(100vh - 70px); /* Учтено увеличение высоты header */
   }
   .node circle {
     cursor: pointer;
@@ -108,7 +113,7 @@
   };
 
   const width = window.innerWidth;
-  const height = window.innerHeight - 50;
+  const height = window.innerHeight - 70; /* Учтено увеличение высоты header */
 
   const svg = d3.select("#tree").append("svg")
     .attr("width", width)
@@ -120,7 +125,7 @@
 
   let root = d3.hierarchy(treeData);
 
-  // Функция для сворачивания всех детей узла (скрываем при загрузке)
+  // Функция для сворачивания всех детей узла
   function collapse(d) {
     if(d.children) {
       d._children = d.children;
@@ -132,7 +137,8 @@
   root.x0 = height / 2;
   root.y0 = 0;
 
-  root.children.forEach(collapse);
+  // УБРАЛ СВОРАЧИВАНИЕ ПРИ ЗАГРУЗКЕ - теперь все узлы видны сразу
+  // root.children.forEach(collapse); // ЗАКОММЕНТИРОВАНО
 
   update(root);
 
