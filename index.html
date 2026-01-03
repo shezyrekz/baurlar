@@ -3,141 +3,511 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Шежіре - Қазақ шежіресі</title>
-    <link rel="stylesheet" href="style.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&family=Noto+Sans+Arabic:wght@400;500;600&display=swap" rel="stylesheet">
+    <title>Шежіре - Қазақ рулары</title>
+    
+    <!-- Простые стили -->
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: #0a1929;
+            color: #e0e0e0;
+            line-height: 1.6;
+            min-height: 100vh;
+        }
+        
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        /* Шапка */
+        header {
+            text-align: center;
+            padding: 30px 0;
+            border-bottom: 1px solid #1e3a5f;
+            margin-bottom: 30px;
+        }
+        
+        .logo {
+            font-size: 32px;
+            font-weight: 700;
+            color: #64b5f6;
+            text-decoration: none;
+            display: inline-block;
+            margin-bottom: 10px;
+        }
+        
+        .subtitle {
+            color: #90a4ae;
+            font-size: 14px;
+        }
+        
+        /* Основное меню */
+        .main-nav {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            margin-bottom: 40px;
+        }
+        
+        .nav-item {
+            background: #132f4c;
+            border-radius: 8px;
+            padding: 20px;
+            text-align: center;
+            text-decoration: none;
+            color: #e0e0e0;
+            border: 1px solid #1e3a5f;
+            transition: all 0.3s ease;
+        }
+        
+        .nav-item:hover {
+            background: #1e3a5f;
+            transform: translateY(-2px);
+        }
+        
+        .nav-title {
+            font-size: 20px;
+            font-weight: 600;
+            margin-bottom: 5px;
+            color: #64b5f6;
+        }
+        
+        .nav-desc {
+            font-size: 12px;
+            color: #90a4ae;
+        }
+        
+        /* Список жузов */
+        .zhuz-section {
+            margin-bottom: 40px;
+        }
+        
+        .zhuz-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 15px 0;
+            border-bottom: 1px solid #1e3a5f;
+            margin-bottom: 20px;
+            cursor: pointer;
+        }
+        
+        .zhuz-title {
+            font-size: 22px;
+            font-weight: 600;
+            color: #64b5f6;
+        }
+        
+        .arrow {
+            color: #90a4ae;
+            font-size: 18px;
+            transition: transform 0.3s;
+        }
+        
+        .arrow.rotated {
+            transform: rotate(180deg);
+        }
+        
+        .zhuz-content {
+            display: none;
+            padding-left: 10px;
+        }
+        
+        .zhuz-content.active {
+            display: block;
+        }
+        
+        /* Список родов */
+        .ru-list {
+            list-style: none;
+        }
+        
+        .ru-item {
+            padding: 12px 15px;
+            margin: 5px 0;
+            background: #132f4c;
+            border-radius: 6px;
+            border-left: 3px solid #64b5f6;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .ru-item:hover {
+            background: #1e3a5f;
+            transform: translateX(5px);
+        }
+        
+        .ru-name {
+            font-size: 16px;
+            font-weight: 500;
+            margin-bottom: 3px;
+        }
+        
+        .ru-desc {
+            font-size: 12px;
+            color: #90a4ae;
+        }
+        
+        /* Детальная информация */
+        .detail-panel {
+            position: fixed;
+            top: 0;
+            right: -400px;
+            width: 350px;
+            height: 100vh;
+            background: #0a1929;
+            border-left: 1px solid #1e3a5f;
+            padding: 20px;
+            overflow-y: auto;
+            transition: right 0.3s ease;
+            z-index: 1000;
+        }
+        
+        .detail-panel.active {
+            right: 0;
+        }
+        
+        .close-btn {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            background: none;
+            border: none;
+            color: #90a4ae;
+            font-size: 24px;
+            cursor: pointer;
+        }
+        
+        .detail-title {
+            font-size: 24px;
+            color: #64b5f6;
+            margin-bottom: 15px;
+            padding-right: 30px;
+        }
+        
+        .detail-content {
+            color: #e0e0e0;
+        }
+        
+        .overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.7);
+            display: none;
+            z-index: 999;
+        }
+        
+        .overlay.active {
+            display: block;
+        }
+        
+        /* Поиск */
+        .search-box {
+            position: relative;
+            margin-bottom: 30px;
+        }
+        
+        .search-input {
+            width: 100%;
+            padding: 15px 45px 15px 15px;
+            background: #132f4c;
+            border: 1px solid #1e3a5f;
+            border-radius: 8px;
+            color: #e0e0e0;
+            font-size: 16px;
+        }
+        
+        .search-input:focus {
+            outline: none;
+            border-color: #64b5f6;
+        }
+        
+        .search-icon {
+            position: absolute;
+            right: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #90a4ae;
+        }
+        
+        /* Футер */
+        footer {
+            text-align: center;
+            padding: 30px 0;
+            border-top: 1px solid #1e3a5f;
+            margin-top: 50px;
+            color: #90a4ae;
+            font-size: 12px;
+        }
+        
+        /* Адаптивность */
+        @media (max-width: 600px) {
+            .main-nav {
+                grid-template-columns: 1fr;
+            }
+            
+            .detail-panel {
+                width: 100%;
+                right: -100%;
+            }
+        }
+    </style>
 </head>
 <body>
-    <!-- Навигация -->
-    <nav class="navbar">
-        <div class="container nav-container">
-            <a href="index.html" class="logo">
-                <i class="fas fa-tree"></i>
-                <span>Шежіре</span>
-            </a>
-            
-            <div class="nav-links">
-                <a href="#about">Туралы</a>
-                <a href="#zhuzlar">Жүздер</a>
-                <a href="#tree">Шежіре ағашы</a>
-                <a href="#search">Іздеу</a>
-            </div>
-            
-            <button class="language-switcher">
-                <i class="fas fa-globe"></i>
-                <span>ҚАЗ</span>
-            </button>
+    <div class="overlay" id="overlay"></div>
+    
+    <div class="container">
+        <!-- Шапка -->
+        <header>
+            <a href="#" class="logo">Шежіре</a>
+            <div class="subtitle">Қазақ руларының шежіресі</div>
+        </header>
+        
+        <!-- Поиск -->
+        <div class="search-box">
+            <input type="text" class="search-input" placeholder="Ру атын іздеу..." id="searchInput">
+            <div class="search-icon">🔍</div>
         </div>
-    </nav>
-
-    <!-- Герой-секция -->
-    <section class="hero">
-        <div class="container">
-            <h1 class="hero-title">
-                <span class="highlight">ҚАЗАҚ</span> РУЛАРЫНЫҢ ШЕЖІРЕСІ
-            </h1>
-            <p class="hero-subtitle">
-                Ұлы жүз, Орта жүз, Кіші жүз және Жүзден тыс рулардың тарихы мен шежіресі
-            </p>
-            <a href="#zhuzlar" class="cta-button">
-                Жүздерді зерттеу
-                <i class="fas fa-arrow-right"></i>
+        
+        <!-- Основное меню -->
+        <div class="main-nav">
+            <a href="#zhuzlar" class="nav-item">
+                <div class="nav-title">Жүздер</div>
+                <div class="nav-desc">Ұлы, Орта, Кіші</div>
+            </a>
+            <a href="#tree" class="nav-item">
+                <div class="nav-title">Шежіре</div>
+                <div class="nav-desc">Ағашы</div>
+            </a>
+            <a href="#search" class="nav-item">
+                <div class="nav-title">Іздеу</div>
+                <div class="nav-desc">Руларды іздеу</div>
+            </a>
+            <a href="#about" class="nav-item">
+                <div class="nav-title">Туралы</div>
+                <div class="nav-desc">Сайт туралы</div>
             </a>
         </div>
-    </section>
-
-    <!-- Жүздер секция -->
-    <section id="zhuzlar" class="zhuz-section">
-        <div class="container">
-            <h2 class="section-title">ҚАЗАҚ ЖҮЗДЕРІ</h2>
-            <p class="section-subtitle">Ұлы жүз (үлкен), Орта жүз (орта), Кіші жүз (кіші)</p>
-            
-            <div class="zhuz-cards">
-                <!-- Ұлы жүз -->
-                <div class="zhuz-card">
-                    <div class="zhuz-icon" style="background: linear-gradient(135deg, #4CAF50, #2E7D32);">
-                        <i class="fas fa-mountain"></i>
-                    </div>
-                    <h3>ҰЛЫ ЖҮЗ</h3>
-                    <p>Оңтүстік пен оңтүстік-шығыс аймақтары. Дулат, Жалайыр, Албан, т.б.</p>
-                    <a href="zhuz-pages/uly-zhuz.html" class="zhuz-link">
-                        Толығырақ <i class="fas fa-chevron-right"></i>
-                    </a>
-                </div>
-                
-                <!-- Орта жүз -->
-                <div class="zhuz-card">
-                    <div class="zhuz-icon" style="background: linear-gradient(135deg, #2196F3, #0D47A1);">
-                        <i class="fas fa-water"></i>
-                    </div>
-                    <h3>ОРТА ЖҮЗ</h3>
-                    <p>Орталық және солтүстік аймақтары. Арғын, Найман, Керей, т.б.</p>
-                    <a href="zhuz-pages/orta-zhuz.html" class="zhuz-link">
-                        Толығырақ <i class="fas fa-chevron-right"></i>
-                    </a>
-                </div>
-                
-                <!-- Кіші жүз -->
-                <div class="zhuz-card">
-                    <div class="zhuz-icon" style="background: linear-gradient(135deg, #FF9800, #EF6C00);">
-                        <i class="fas fa-sun"></i>
-                    </div>
-                    <h3>КІШІ ЖҮЗ</h3>
-                    <p>Батыс аймақтары. Әлімұлы, Байұлы, Жетіру, т.б.</p>
-                    <a href="zhuz-pages/kishi-zhuz.html" class="zhuz-link">
-                        Толығырақ <i class="fas fa-chevron-right"></i>
-                    </a>
-                </div>
+        
+        <!-- Жүздер -->
+        <div class="zhuz-section">
+            <div class="zhuz-header" onclick="toggleZhuz('uly')">
+                <div class="zhuz-title">Ұлы жүз</div>
+                <div class="arrow">▼</div>
+            </div>
+            <div class="zhuz-content" id="uly-content">
+                <ul class="ru-list">
+                    <li class="ru-item" onclick="showDetail('Дулат')">
+                        <div class="ru-name">Дулат</div>
+                        <div class="ru-desc">Жеті ата: Байдібек батыр</div>
+                    </li>
+                    <li class="ru-item" onclick="showDetail('Жалайыр')">
+                        <div class="ru-name">Жалайыр</div>
+                        <div class="ru-desc">Ескі тайпа</div>
+                    </li>
+                    <li class="ru-item" onclick="showDetail('Албан')">
+                        <div class="ru-name">Албан</div>
+                        <div class="ru-desc">Тарихи ру</div>
+                    </li>
+                    <li class="ru-item" onclick="showDetail('Суан')">
+                        <div class="ru-name">Суан</div>
+                        <div class="ru-desc">Кіші тармақ</div>
+                    </li>
+                </ul>
             </div>
         </div>
-    </section>
-
-    <!-- Шежіре ағашы -->
-    <section id="tree" class="tree-section">
-        <div class="container">
-            <h2 class="section-title">ШЕЖІРЕ АҒАШЫ</h2>
-            <div class="tree-container">
-                <div class="tree">
-                    <!-- Дерево будет отрисовано через JavaScript -->
-                </div>
+        
+        <div class="zhuz-section">
+            <div class="zhuz-header" onclick="toggleZhuz('orta')">
+                <div class="zhuz-title">Орта жүз</div>
+                <div class="arrow">▼</div>
+            </div>
+            <div class="zhuz-content" id="orta-content">
+                <ul class="ru-list">
+                    <li class="ru-item" onclick="showDetail('Арғын')">
+                        <div class="ru-name">Арғын</div>
+                        <div class="ru-desc">Негізгі рулар</div>
+                    </li>
+                    <li class="ru-item" onclick="showDetail('Найман')">
+                        <div class="ru-name">Найман</div>
+                        <div class="ru-desc">8 аталық</div>
+                    </li>
+                    <li class="ru-item" onclick="showDetail('Керей')">
+                        <div class="ru-name">Керей</div>
+                        <div class="ru-desc">Ежелгі тайпа</div>
+                    </li>
+                </ul>
             </div>
         </div>
-    </section>
-
-    <!-- Поиск -->
-    <section id="search" class="search-section">
-        <div class="container">
-            <h2 class="section-title">РУЛАРДЫ ІЗДЕУ</h2>
-            <div class="search-box">
-                <input type="text" id="searchInput" placeholder="Ру атын енгізіңіз...">
-                <button id="searchButton">
-                    <i class="fas fa-search"></i> Іздеу
-                </button>
+        
+        <div class="zhuz-section">
+            <div class="zhuz-header" onclick="toggleZhuz('kishi')">
+                <div class="zhuz-title">Кіші жүз</div>
+                <div class="arrow">▼</div>
             </div>
-            <div id="searchResults" class="search-results"></div>
+            <div class="zhuz-content" id="kishi-content">
+                <ul class="ru-list">
+                    <li class="ru-item" onclick="showDetail('Әлімұлы')">
+                        <div class="ru-name">Әлімұлы</div>
+                        <div class="ru-desc">6 ата</div>
+                    </li>
+                    <li class="ru-item" onclick="showDetail('Байұлы')">
+                        <div class="ru-name">Байұлы</div>
+                        <div class="ru-desc">12 ата</div>
+                    </li>
+                    <li class="ru-item" onclick="showDetail('Жетіру')">
+                        <div class="ru-name">Жетіру</div>
+                        <div class="ru-desc">7 ата</div>
+                    </li>
+                </ul>
+            </div>
         </div>
-    </section>
-
+        
+        <div class="zhuz-section">
+            <div class="zhuz-header" onclick="toggleZhuz('others')">
+                <div class="zhuz-title">Жүзден тыс</div>
+                <div class="arrow">▼</div>
+            </div>
+            <div class="zhuz-content" id="others-content">
+                <ul class="ru-list">
+                    <li class="ru-item" onclick="showDetail('Қаңлы')">
+                        <div class="ru-name">Қаңлы</div>
+                        <div class="ru-desc">Көне тайпа</div>
+                    </li>
+                    <li class="ru-item" onclick="showDetail('Қыпшақ')">
+                        <div class="ru-name">Қыпшақ</div>
+                        <div class="ru-desc">Дала халқы</div>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Детальная панель -->
+    <div class="detail-panel" id="detailPanel">
+        <button class="close-btn" onclick="closeDetail()">×</button>
+        <h2 class="detail-title" id="detailTitle">Дулат</h2>
+        <div class="detail-content" id="detailContent">
+            <p><strong>Жүзі:</strong> Ұлы жүз</p>
+            <p><strong>Аталары:</strong> Ботбай, Жақсылық, Ысты, Албан, Суан, Дулат, Шапырашты</p>
+            <p><strong>Тарихы:</strong> Дулат руы Ұлы жүздің ең үлкен руларының бірі. Тарихта белгілі тұлғалар: Байдібек батыр, Балпық би.</p>
+            <p><strong>Ауданы:</strong> Оңтүстік Қазақстан, Жамбыл облыстары</p>
+        </div>
+    </div>
+    
     <!-- Футер -->
     <footer>
-        <div class="container">
-            <div class="footer-content">
-                <div class="footer-section">
-                    <h3>Шежіре</h3>
-                    <p>Қазақ халқының тарихы мен мәдениетін сақтауға арналған платформа.</p>
-                </div>
-                <div class="footer-section">
-                    <h3>Байланыс</h3>
-                    <p><i class="fas fa-envelope"></i> info@shejire.kz</p>
-                </div>
-            </div>
-            <div class="footer-bottom">
-                <p>&copy; 2024 Шежіре. Барлық құқықтар сақталған.</p>
-            </div>
-        </div>
+        <div>© 2024 Шежіре. Барлық құқықтар сақталған.</div>
+        <div style="margin-top: 10px;">tumalas.kz сайтына ұқсас дизайн</div>
     </footer>
-
-    <script src="script.js"></script>
+    
+    <!-- Простой JavaScript -->
+    <script>
+        // Данные для детальной информации
+        const ruData = {
+            'Дулат': {
+                zhuz: 'Ұлы жүз',
+                atalary: 'Ботбай, Жақсылық, Ысты, Албан, Суан, Дулат, Шапырашты',
+                tarihy: 'Дулат руы Ұлы жүздің ең үлкен руларының бірі. Тарихта белгілі тұлғалар: Байдібек батыр, Балпық би.',
+                audany: 'Оңтүстік Қазақстан, Жамбыл облыстары'
+            },
+            'Жалайыр': {
+                zhuz: 'Ұлы жүз',
+                atalary: 'Беріш, Сары, Шоқа, Балталы, Қыстық, Жағалбайлы, Ысты',
+                tarihy: 'Көне тайпа, моңғол шапқыншылығынан кейін қалпына келген.',
+                audany: 'Алматы, Жетісу облыстары'
+            }
+        };
+        
+        // Переключение жузов
+        function toggleZhuz(zhuzId) {
+            const content = document.getElementById(zhuzId + '-content');
+            const arrow = event.currentTarget.querySelector('.arrow');
+            
+            if (content.classList.contains('active')) {
+                content.classList.remove('active');
+                arrow.classList.remove('rotated');
+            } else {
+                // Закрываем другие открытые
+                document.querySelectorAll('.zhuz-content.active').forEach(item => {
+                    item.classList.remove('active');
+                });
+                document.querySelectorAll('.arrow.rotated').forEach(item => {
+                    item.classList.remove('rotated');
+                });
+                
+                // Открываем выбранный
+                content.classList.add('active');
+                arrow.classList.add('rotated');
+            }
+        }
+        
+        // Показать детальную информацию
+        function showDetail(ruName) {
+            const panel = document.getElementById('detailPanel');
+            const overlay = document.getElementById('overlay');
+            const title = document.getElementById('detailTitle');
+            const content = document.getElementById('detailContent');
+            
+            title.textContent = ruName;
+            
+            if (ruData[ruName]) {
+                const data = ruData[ruName];
+                content.innerHTML = `
+                    <p><strong>Жүзі:</strong> ${data.zhuz}</p>
+                    <p><strong>Аталары:</strong> ${data.atalary}</p>
+                    <p><strong>Тарихы:</strong> ${data.tarihy}</p>
+                    <p><strong>Ауданы:</strong> ${data.audany}</p>
+                `;
+            } else {
+                content.innerHTML = `<p>${ruName} руы туралы ақпарат дайындалуда...</p>`;
+            }
+            
+            panel.classList.add('active');
+            overlay.classList.add('active');
+            document.body.style.overflow = 'hidden';
+        }
+        
+        // Закрыть детальную панель
+        function closeDetail() {
+            document.getElementById('detailPanel').classList.remove('active');
+            document.getElementById('overlay').classList.remove('active');
+            document.body.style.overflow = 'auto';
+        }
+        
+        // Закрыть по клику на overlay
+        document.getElementById('overlay').addEventListener('click', closeDetail);
+        
+        // Поиск
+        document.getElementById('searchInput').addEventListener('input', function(e) {
+            const searchTerm = e.target.value.toLowerCase();
+            const allItems = document.querySelectorAll('.ru-item');
+            
+            allItems.forEach(item => {
+                const ruName = item.querySelector('.ru-name').textContent.toLowerCase();
+                if (ruName.includes(searchTerm) || searchTerm === '') {
+                    item.style.display = 'block';
+                } else {
+                    item.style.display = 'none';
+                }
+            });
+        });
+        
+        // Инициализация - открыть первый жуз
+        document.addEventListener('DOMContentLoaded', function() {
+            toggleZhuz('uly');
+        });
+    </script>
 </body>
 </html>
