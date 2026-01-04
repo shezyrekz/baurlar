@@ -244,14 +244,10 @@
     transition: stroke 0.3s;
   }
   
-  .node-icon {
-    font-size: 14px;
-    text-anchor: middle;
-    dominant-baseline: central;
+  /* Стили для картинок */
+  .node-image {
     pointer-events: none;
     user-select: none;
-    fill: #456d61;
-    font-weight: bold;
   }
   
   .node-text {
@@ -561,18 +557,14 @@
         .attr('cy', 0)
         .attr('r', 0);
 
-      // Иконка
-      nodeEnter.append('text')
-        .attr('class', 'node-icon')
-        .attr('x', 0)
-        .attr('y', 0)
-        .text(d => {
-          if (d.depth === 0) return '👑';
-          if (d.depth === 1) return '⭐';
-          if (d._children) return '➕';
-          if (d.children) return '➖';
-          return '👤';
-        })
+      // КАРТИНКА yurt.png
+      nodeEnter.append('image')
+        .attr('class', 'node-image')
+        .attr('x', -18)  // половина от 36px
+        .attr('y', -18)
+        .attr('width', 36)
+        .attr('height', 36)
+        .attr('href', 'images/yurt.png')
         .style('opacity', 0);
 
       // Текст
@@ -607,7 +599,8 @@
         .attr('r', 20)
         .style('stroke', d => d._children ? '#4CAF50' : '#26a69a');
 
-      nodeUpdate.selectAll('.node-icon, .node-text')
+      // Обновляем картинку и текст вместе
+      nodeUpdate.selectAll('.node-image, .node-text')
         .transition()
         .duration(duration)
         .style('opacity', 1);
