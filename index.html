@@ -209,7 +209,7 @@
     font-size: 14px;
   }
   
-  /* СТИЛИ ДЛЯ ДЕРЕВА (ОСТАВИЛ ТВОИ) */
+  /* СТИЛИ ДЛЯ ДЕРЕВА */
   #tree-container {
     width: 100%;
     height: 100%;
@@ -237,17 +237,13 @@
     stroke: #26a69a;
   }
   
-  .node-circle {
-    fill: white;
-    stroke: inherit;
-    stroke-width: 3px;
-    transition: stroke 0.3s;
-  }
-  
-  /* Стили для картинок */
   .node-image {
     pointer-events: none;
     user-select: none;
+  }
+  
+  .image-clip {
+    clip-path: circle(50% at 50% 50%);
   }
   
   .node-text {
@@ -550,21 +546,33 @@
         .attr('width', 0)
         .attr('height', 50);
 
-      // Кружок
-      nodeEnter.append('circle')
-        .attr('class', 'node-circle')
+      // Создаем круглую маску для картинки
+      nodeEnter.append('clipPath')
+        .attr('id', (d) => `clip-${d.id}`)
+        .append('circle')
         .attr('cx', 0)
         .attr('cy', 0)
-        .attr('r', 0);
+        .attr('r', 20);
 
-      // КАРТИНКА yurt.png
+      // КАРТИНКА yurt.png с круглой маской
       nodeEnter.append('image')
         .attr('class', 'node-image')
-        .attr('x', -18)  // половина от 36px
-        .attr('y', -18)
-        .attr('width', 36)
-        .attr('height', 36)
+        .attr('x', -20)
+        .attr('y', -20)
+        .attr('width', 40)
+        .attr('height', 40)
         .attr('href', 'images/yurt.png')
+        .attr('clip-path', (d) => `url(#clip-${d.id})`)
+        .style('opacity', 0);
+
+      // Обводка вокруг картинки
+      nodeEnter.append('circle')
+        .attr('cx', 0)
+        .attr('cy', 0)
+        .attr('r', 20)
+        .attr('fill', 'none')
+        .attr('stroke', d => d._children ? '#4CAF50' : '#26a69a')
+        .attr('stroke-width', 3)
         .style('opacity', 0);
 
       // Текст
@@ -593,17 +601,17 @@
         })
         .attr('class', d => `node-background ${d._children ? 'collapsed' : 'expanded'}`);
 
-      nodeUpdate.select('.node-circle')
-        .transition()
-        .duration(duration)
-        .attr('r', 20)
-        .style('stroke', d => d._children ? '#4CAF50' : '#26a69a');
-
-      // Обновляем картинку и текст вместе
-      nodeUpdate.selectAll('.node-image, .node-text')
+      // Обновляем картинку и обводку
+      nodeUpdate.selectAll('.node-image, circle[stroke], .node-text')
         .transition()
         .duration(duration)
         .style('opacity', 1);
+
+      // Обновляем цвет обводки при развертывании/свертывании
+      nodeUpdate.select('circle[stroke]')
+        .transition()
+        .duration(duration)
+        .attr('stroke', d => d._children ? '#4CAF50' : '#26a69a');
 
       // СВЯЗИ
       const link = g.selectAll('path.link')
