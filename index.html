@@ -213,55 +213,60 @@
   #tree-container {
     width: 100%;
     height: 100%;
-    cursor: move; /* Курсор "рука" при наведении */
+    cursor: move;
   }
   
   .node-group {
     cursor: pointer;
   }
   
-  .node-background {
+  .node-card {
     fill: white;
     stroke: #456d61;
     stroke-width: 2px;
-    rx: 25px;
-    ry: 25px;
-    filter: drop-shadow(2px 2px 4px rgba(0,0,0,0.1));
-    transition: stroke 0.3s;
+    rx: 15px;
+    ry: 15px;
+    filter: drop-shadow(2px 2px 6px rgba(0,0,0,0.15));
+    transition: all 0.3s ease;
   }
   
-  .node-background.collapsed {
+  .node-card:hover {
+    filter: drop-shadow(3px 3px 8px rgba(0,0,0,0.2));
+    stroke-width: 3px;
+  }
+  
+  .node-card.collapsed {
     stroke: #4CAF50;
+    fill: #f8fff8;
   }
   
-  .node-background.expanded {
+  .node-card.expanded {
     stroke: #26a69a;
-  }
-  
-  .node-image {
-    pointer-events: none;
-    user-select: none;
-  }
-  
-  .image-clip {
-    clip-path: circle(50% at 50% 50%);
+    fill: #f8fdff;
   }
   
   .node-text {
-    font-size: 14px;
+    font-size: 13px;
     pointer-events: none;
     user-select: none;
     fill: #333;
-    font-weight: bold;
+    font-weight: 600;
     text-anchor: start;
     dominant-baseline: central;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
   }
   
   .link {
     fill: none;
-    stroke: #456d61;
+    stroke: #789d92;
     stroke-width: 2px;
-    opacity: 0.8;
+    opacity: 0.7;
+    transition: opacity 0.3s;
+  }
+  
+  .link:hover {
+    opacity: 1;
+    stroke-width: 3px;
   }
   
   .floating-btn {
@@ -400,368 +405,13 @@
 <script>
   // ГЛОБАЛЬНЫЕ ПЕРЕМЕННЫЕ
   let i = 0;
-  
-  // ========== ПОЛНАЯ СТРУКТУРА ДАННЫХ С TUMALAS.KZ ==========
   let currentTreeData = {
     name: "Алаш",
     children: [
       { 
         name: "Ұлы жүз",
         children: [
-          { 
-            name: "Қанлы",
-            children: [
-              { 
-                name: "Қанкөжек",
-                children: [
-                  { 
-                    name: "Байқоңыр би",
-                    children: [
-                      { name: "Ақылқожа" },
-                      { name: "Ырғақты" },
-                      { 
-                        name: "Құйысқанды",
-                        children: [
-                          { 
-                            name: "Кенжеалы",
-                            children: [
-                              { name: "Күлес" },
-                              { 
-                                name: "Емендес",
-                                children: [
-                                  { name: "Айбас" },
-                                  { name: "Лепес" },
-                                  { 
-                                    name: "Назарқұл",
-                                    children: [
-                                      { 
-                                        name: "Қалмамбет",
-                                        children: [
-                                          { 
-                                            name: "Манаш",
-                                            children: [
-                                              { name: "Бердалы" },
-                                              { name: "Сердалы" },
-                                              { 
-                                                name: "Сүгір",
-                                                children: [
-                                                  { name: "Баубек" },
-                                                  { 
-                                                    name: "Үйсінбай",
-                                                    children: [
-                                                      { name: "Түсіп" },
-                                                      { name: "Жүніс" },
-                                                      { 
-                                                        name: "Үсен",
-                                                        children: [
-                                                          { name: "Омар" },
-                                                          { name: "Сыдық" }
-                                                        ]
-                                                      }
-                                                    ]
-                                                  },
-                                                  { 
-                                                    name: "Асқар",
-                                                    children: [
-                                                      { 
-                                                        name: "Дабылда",
-                                                        children: [
-                                                          { name: "Абдан" }
-                                                        ]
-                                                      }
-                                                    ]
-                                                  },
-                                                  { 
-                                                    name: "Оразалы",
-                                                    children: [
-                                                      { 
-                                                        name: "Әузейіт",
-                                                        children: [
-                                                          { name: "Тұрсын" }
-                                                        ]
-                                                      }
-                                                    ]
-                                                  }
-                                                ]
-                                              }
-                                            ]
-                                          }
-                                        ]
-                                      }
-                                    ]
-                                  }
-                                ]
-                              }
-                            ]
-                          }
-                        ]
-                      },
-                      { 
-                        name: "Тәңірберген",
-                        children: [
-                          { 
-                            name: "Байысбай",
-                            children: [
-                              { name: "Мамырбай" },
-                              { 
-                                name: "Мүсіреп",
-                                children: [
-                                  { 
-                                    name: "Серікбай",
-                                    children: [
-                                      { 
-                                        name: "Досай",
-                                        children: [
-                                          { 
-                                            name: "Батырбек",
-                                            children: [
-                                              { name: "Тұрдықұл" },
-                                              { 
-                                                name: "Тұрғын",
-                                                children: [
-                                                  { 
-                                                    name: "Бақытжан",
-                                                    children: [
-                                                      { name: "Бауыржан" },
-                                                      { name: "Мұратбек" }
-                                                    ]
-                                                  },
-                                                  { 
-                                                    name: "Бекжан",
-                                                    children: [
-                                                      { name: "Медеу" },
-                                                      { name: "Нұрзат" }
-                                                    ]
-                                                  },
-                                                  { 
-                                                    name: "Елжан",
-                                                    children: [
-                                                      { name: "Мейіржан" },
-                                                      { name: "Досымжан" },
-                                                      { name: "Елмар" }
-                                                    ]
-                                                  }
-                                                ]
-                                              },
-                                              { name: "Тұрғынәлі" },
-                                              { name: "Шералы" },
-                                              { name: "Бердалы" }
-                                            ]
-                                          }
-                                        ]
-                                      }
-                                    ]
-                                  },
-                                  { 
-                                    name: "Қарабала",
-                                    children: [
-                                      { 
-                                        name: "Тынышбай",
-                                        children: [
-                                          { name: "Әмірбек" }
-                                        ]
-                                      }
-                                    ]
-                                  },
-                                  { 
-                                    name: "Қойбағар",
-                                    children: [
-                                      { name: "Құралбек" },
-                                      { name: "Төлеген" }
-                                    ]
-                                  },
-                                  { 
-                                    name: "Медет",
-                                    children: [
-                                      { name: "Парнақұл" },
-                                      { name: "Темірқұл" },
-                                      { 
-                                        name: "Мамырқұл",
-                                        children: [
-                                          { 
-                                            name: "Бердіқұл",
-                                            children: [
-                                              { 
-                                                name: "Жаппар",
-                                                children: [
-                                                  { 
-                                                    name: "Батыр",
-                                                    children: [
-                                                      { name: "Төлеген" },
-                                                      { name: "Руслан" },
-                                                      { name: "Элдар" }
-                                                    ]
-                                                  },
-                                                  { 
-                                                    name: "Жәнібек",
-                                                    children: [
-                                                      { name: "Дамир" },
-                                                      { name: "Айбек" }
-                                                    ]
-                                                  },
-                                                  { 
-                                                    name: "Темір",
-                                                    children: [
-                                                      { name: "Шыңғыс" },
-                                                      { name: "Радмир" },
-                                                      { name: "Самир" }
-                                                    ]
-                                                  }
-                                                ]
-                                              }
-                                            ]
-                                          },
-                                          { 
-                                            name: "Мұхаммед",
-                                            children: [
-                                              { 
-                                                name: "Смайыл",
-                                                children: [
-                                                  { 
-                                                    name: "Иса",
-                                                    children: [
-                                                      { name: "Әліхан" },
-                                                      { name: "Әмірхан" },
-                                                      { name: "Әсілхан" }
-                                                    ]
-                                                  },
-                                                  { 
-                                                    name: "Марат",
-                                                    children: [
-                                                      { name: "Темур" }
-                                                    ]
-                                                  }
-                                                ]
-                                              }
-                                            ]
-                                          },
-                                          { 
-                                            name: "Әбділа",
-                                            children: [
-                                              { 
-                                                name: "Исрайыл",
-                                                children: [
-                                                  { name: "Рашид" }
-                                                ]
-                                              },
-                                              { 
-                                                name: "Усман",
-                                                children: [
-                                                  { name: "Нұрлан" }
-                                                ]
-                                              },
-                                              { 
-                                                name: "Сейітжан",
-                                                children: [
-                                                  { name: "Нұржан" }
-                                                ]
-                                              },
-                                              { 
-                                                name: "Бақыт",
-                                                children: [
-                                                  { name: "Нұрғали" },
-                                                  { name: "Нұрсұлтан" }
-                                                ]
-                                              }
-                                            ]
-                                          },
-                                          { 
-                                            name: "Махмұт",
-                                            children: [
-                                              { 
-                                                name: "Абзал",
-                                                children: [
-                                                  { 
-                                                    name: "Әліқұл",
-                                                    children: [
-                                                      { 
-                                                        name: "Қуаныш",
-                                                        children: [
-                                                          { name: "Нқоислам" }
-                                                        ]
-                                                      }
-                                                    ]
-                                                  }
-                                                ]
-                                              }
-                                            ]
-                                          },
-                                          { 
-                                            name: "Өмірқұл",
-                                            children: [
-                                              { 
-                                                name: "Серікбай",
-                                                children: [
-                                                  { 
-                                                    name: "Малик",
-                                                    children: [
-                                                      { 
-                                                        name: "Берік",
-                                                        children: [
-                                                          { 
-                                                            name: "Дамир",
-                                                            children: [
-                                                              { name: "Самир" }
-                                                            ]
-                                                          }
-                                                        ]
-                                                      },
-                                                      { name: "Абзал" }
-                                                    ]
-                                                  },
-                                                  { 
-                                                    name: "Смадияр",
-                                                    children: [
-                                                      { 
-                                                        name: "Данияр",
-                                                        children: [
-                                                          { name: "Асқар" },
-                                                          { name: "Ибрахим" }
-                                                        ]
-                                                      },
-                                                      { 
-                                                        name: "Бауыржан",
-                                                        children: [
-                                                          { name: "Айбар" }
-                                                        ]
-                                                      }
-                                                    ]
-                                                  }
-                                                ]
-                                              }
-                                            ]
-                                          }
-                                        ]
-                                      }
-                                    ]
-                                  }
-                                ]
-                              }
-                            ]
-                          }
-                        ]
-                      },
-                      { name: "Тілес" }
-                    ]
-                  }
-                ]
-              },
-              { name: "Қожа қанлы" },
-              { 
-                name: "Қайы қаңлы",
-                children: [
-                  { name: "Cүлеймен ғази" },
-                  { name: "Ертұғрыл ғази" },
-                  { name: "Осман ғази" }
-                ]
-              },
-              { name: "Жусанды" },
-              { name: "Ашамайлы" },
-              { name: "Қарқалы" },
-              { name: "Ергенекті" },
-              { name: "Байтерек батыр" }
-            ]
-          },
+          { name: "Қанлы" },
           { name: "Шанышқылы" },
           { name: "Сіргелі" },
           { name: "Шақшам" },
@@ -806,8 +456,7 @@
           { name: "Маңғыт" },
           { name: "Көлеген" },
           { name: "Кенегес" },
-          { name: "Қият" },
-          { name: "---------" }
+          { name: "Қият" }
         ]
       }
     ]
@@ -821,27 +470,20 @@
     icon.addEventListener('click', function() {
       const sectionId = this.getAttribute('data-section');
       
-      // Убираем active у всех иконок
       icons.forEach(i => i.classList.remove('active'));
-      // Добавляем active текущей иконке
       this.classList.add('active');
       
-      // Скрываем все секции
       sections.forEach(section => section.classList.remove('active'));
-      // Показываем нужную секцию
       document.getElementById(`${sectionId}-section`).classList.add('active');
       
-      // Если переключаемся на дерево - обновляем его
       if (sectionId === 'people') {
         setTimeout(initTree, 100);
       }
       
-      // Если переключаемся на статистику - обновляем её
       if (sectionId === 'stats') {
         updateStatistics();
       }
       
-      // Если переключаемся на добавление - обновляем список родителей
       if (sectionId === 'add') {
         updateParentSelect();
       }
@@ -849,7 +491,7 @@
   });
 
   // ========== ИНИЦИАЛИЗАЦИЯ ДЕРЕВА ==========
- function initTree() {
+function initTree() {
   const width = window.innerWidth;
   const height = window.innerHeight - 55;
 
@@ -861,28 +503,36 @@
     .attr("height", height);
 
   const g = svg.append("g")
-    .attr("transform", `translate(${width / 2 - 300}, 100)`);
+    .attr("transform", `translate(${width / 2 - 80}, ${height / 2})`);
 
-  svg.call(
-    d3.zoom()
-      .scaleExtent([0.1, 4])
-      .on("zoom", (event) => g.attr("transform", event.transform))
-  ).on("dblclick.zoom", null);
+  // ZOOM функция
+  const zoom = d3.zoom()
+    .scaleExtent([0.1, 3])
+    .on("zoom", (event) => {
+      g.attr("transform", event.transform);
+    });
+  
+  svg.call(zoom)
+    .on("dblclick.zoom", null);
 
+  // Настраиваем дерево
   const treeLayout = d3.tree()
-    .nodeSize([80, 360]); // 🔥 ВАЖНО: расстояние между узлами
+    .nodeSize([100, 250]);
 
   let root = d3.hierarchy(currentTreeData);
 
-  function collapse(d) {
-    if (d.children) {
+  // СВОРАЧИВАЕМ ВСЕ УЗЛЫ КРОМЕ АЛАШ
+  function collapseAllExceptRoot(d) {
+    if (d.depth > 0 && d.children) {
       d._children = d.children;
-      d._children.forEach(collapse);
+      d._children.forEach(collapseAllExceptRoot);
       d.children = null;
     }
   }
-
-  if (root.children) root.children.forEach(collapse);
+  
+  if (root.children) {
+    root.children.forEach(collapseAllExceptRoot);
+  }
 
   root.x0 = 0;
   root.y0 = 0;
@@ -902,6 +552,7 @@
     /* ===== EXIT ===== */
     node.exit()
       .transition().duration(duration)
+      .attr("transform", d => `translate(${source.y},${source.x})`)
       .style("opacity", 0)
       .remove();
 
@@ -910,6 +561,7 @@
       .append("g")
       .attr("class", "node-group")
       .attr("transform", `translate(${source.y0},${source.x0})`)
+      .style("opacity", 0)
       .on("click", (e, d) => {
         e.stopPropagation();
         if (d.children) {
@@ -922,23 +574,39 @@
         updateTree(d);
       });
 
+    // КАРТОЧКА УЗЛА
     nodeEnter.append("rect")
-      .attr("class", "node-background")
+      .attr("class", d => `node-card ${d._children ? 'collapsed' : (d.children ? 'expanded' : '')}`)
       .attr("x", 0)
       .attr("y", -25)
+      .attr("width", 160)
       .attr("height", 50)
-      .attr("width", 140);
+      .attr("rx", 15)
+      .attr("ry", 15);
 
+    // КРУГЛАЯ МАСКА ДЛЯ ФОТО
+    nodeEnter.append("clipPath")
+      .attr("id", d => `clip-${d.id}`)
+      .append("circle")
+      .attr("cx", 30)
+      .attr("cy", 0)
+      .attr("r", 20);
+
+    // ФОТО
     nodeEnter.append("image")
       .attr("x", 10)
-      .attr("y", -15)
-      .attr("width", 30)
-      .attr("height", 30)
-      .attr("href", "images/yurt.png");
+      .attr("y", -20)
+      .attr("width", 40)
+      .attr("height", 40)
+      .attr("href", "images/yurt.png")
+      .attr("clip-path", d => `url(#clip-${d.id})`)
+      .attr("preserveAspectRatio", "xMidYMid slice");
 
+    // ТЕКСТ
     nodeEnter.append("text")
       .attr("class", "node-text")
-      .attr("x", 50)
+      .attr("x", 60)
+      .attr("y", 0)
       .attr("dy", "0.35em")
       .text(d => d.data.name);
 
@@ -947,14 +615,21 @@
 
     nodeUpdate.transition()
       .duration(duration)
-      .attr("transform", d => `translate(${d.y},${d.x})`);
+      .attr("transform", d => `translate(${d.y},${d.x})`)
+      .style("opacity", 1);
 
+    // Обновляем класс карточки
+    nodeUpdate.select("rect")
+      .attr("class", d => `node-card ${d._children ? 'collapsed' : (d.children ? 'expanded' : '')}`);
+
+    // Подгоняем ширину карточки под текст
     nodeUpdate.select("rect")
       .transition()
       .duration(duration)
-      .attr("width", function () {
+      .attr("width", function() {
         const text = this.parentNode.querySelector("text");
-        return Math.max(140, text.getBBox().width + 70);
+        const textWidth = text ? text.getBBox().width : 0;
+        return Math.max(160, textWidth + 70);
       });
 
     /* ===== LINKS ===== */
@@ -973,23 +648,50 @@
       .transition()
       .duration(duration)
       .attr("d", d => {
-        const sourceRect = d.source.nodeRectWidth || 140;
-        const startX = d.source.y + sourceRect;
+        const sourceNode = d.source;
+        const targetNode = d.target;
+        const sourceRect = sourceNode.nodeRectWidth || 160;
+        const targetRect = targetNode.nodeRectWidth || 160;
+        
+        const startX = sourceNode.y + sourceRect;
+        const endX = targetNode.y;
+        const startY = sourceNode.x;
+        const endY = targetNode.x;
+        
+        // Плавная кривая Безье
+        const controlX1 = startX + (endX - startX) * 0.5;
+        const controlX2 = startX + (endX - startX) * 0.5;
+        
         return `
-          M ${startX} ${d.source.x}
-          C ${startX + 80} ${d.source.x},
-            ${d.target.y - 80} ${d.target.x},
-            ${d.target.y} ${d.target.x}
+          M ${startX} ${startY}
+          C ${controlX1} ${startY},
+            ${controlX2} ${endY},
+            ${endX} ${endY}
         `;
-      });
+      })
+      .style("opacity", 0.7);
 
+    // Сохраняем ширину карточки для узла
     nodes.forEach(d => {
       d.x0 = d.x;
       d.y0 = d.y;
-      d.nodeRectWidth = d3.select(d3.selectAll(".node-group").nodes()[nodes.indexOf(d)])
-        .select("rect").node().getBBox().width;
+      const nodeElement = d3.select(d3.selectAll(".node-group").nodes()[nodes.indexOf(d)]);
+      if (nodeElement.size() > 0) {
+        const rect = nodeElement.select("rect").node();
+        if (rect) {
+          d.nodeRectWidth = rect.getBBox().width;
+        }
+      }
     });
   }
+
+  // Центрируем дерево после загрузки
+  setTimeout(() => {
+    const initialTransform = d3.zoomIdentity
+      .translate(width / 2 - 80, height / 2 - 100)
+      .scale(1);
+    svg.call(zoom.transform, initialTransform);
+  }, 100);
 }
 
   // ========== ФУНКЦИЯ ДЛЯ ПОИСКА ==========
@@ -1050,7 +752,6 @@
     
     resultsList.innerHTML = html;
     
-    // Добавляем обработчики клика
     document.querySelectorAll('.result-item').forEach(item => {
       item.addEventListener('click', function() {
         const name = this.getAttribute('data-name');
@@ -1095,10 +796,7 @@
       return;
     }
     
-    // Здесь будет логика добавления в дерево
     alert(`Добавлен: ${name}\nРодитель: ${parent}\nИнфо: ${info || 'нет'}`);
-    
-    // Очищаем форму
     this.reset();
   });
 
@@ -1154,7 +852,6 @@
 
   // ========== КНОПКА + ==========
   document.querySelector('.floating-btn').addEventListener('click', function() {
-    // Переключаем на секцию добавления
     icons.forEach(i => i.classList.remove('active'));
     document.querySelector('[data-section="add"]').classList.add('active');
     
@@ -1169,6 +866,12 @@
     initTree();
     updateStatistics();
     updateParentSelect();
+    
+    window.addEventListener('resize', function() {
+      if (document.getElementById('people-section').classList.contains('active')) {
+        setTimeout(initTree, 100);
+      }
+    });
   });
 </script>
 </body>
