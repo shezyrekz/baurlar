@@ -849,6 +849,7 @@
   });
 
   // ========== ИНИЦИАЛИЗАЦИЯ ДЕРЕВА ==========
+  // ========== ИНИЦИАЛИЗАЦИЯ ДЕРЕВА ==========
   function initTree() {
     const width = window.innerWidth;
     const height = window.innerHeight - 55;
@@ -870,9 +871,10 @@
       .on("dblclick.zoom", null); // Отключаем зум двойным кликом (по желанию)
 
     const g = svg.append("g")
-      .attr("transform", `translate(${width/2 - 100}, 150)`);
+      .attr("transform", `translate(${width/2 - 200}, 100)`); // Смещаем левее и выше
 
-    const treeLayout = d3.tree().size([height - 200, width - 300]);
+    // ========== УВЕЛИЧЕННЫЕ РАССТОЯНИЯ МЕЖДУ УЗЛАМИ ==========
+    const treeLayout = d3.tree().size([height - 100, width - 500]); // Увеличили высоту, уменьшили ширину
 
     let root = d3.hierarchy(currentTreeData);
     
@@ -900,8 +902,9 @@
       const nodes = tree.descendants();
       const links = tree.links();
 
+      // ========== УВЕЛИЧЕННОЕ РАССТОЯНИЕ МЕЖДУ УРОВНЯМИ ==========
       nodes.forEach(d => {
-        d.y = d.depth * 250;
+        d.y = d.depth * 350; // Увеличили с 250 до 350 (вертикальное расстояние)
       });
 
       // УЗЛЫ
@@ -937,7 +940,7 @@
       // ФОН
       nodeEnter.append('rect')
         .attr('class', d => `node-background ${d._children ? 'collapsed' : 'expanded'}`)
-        .attr('x', -30)
+        .attr('x', -40) // Увеличили ширину фона
         .attr('y', -25)
         .attr('width', 0)
         .attr('height', 50);
@@ -974,7 +977,7 @@
       // Текст
       nodeEnter.append('text')
         .attr('class', 'node-text')
-        .attr('x', 25)
+        .attr('x', 30) // Сдвинули текст правее
         .attr('y', 0)
         .text(d => d.data.name)
         .style('opacity', 0);
@@ -993,7 +996,7 @@
         .attr('width', function() {
           const text = this.parentNode.querySelector('.node-text');
           const textLength = text ? text.getComputedTextLength() : 0;
-          return Math.max(120, textLength + 60);
+          return Math.max(140, textLength + 80); // Увеличили минимальную ширину
         })
         .attr('class', d => `node-background ${d._children ? 'collapsed' : 'expanded'}`);
 
@@ -1024,7 +1027,7 @@
         .attr('class', 'link')
         .attr('d', function(d) {
           const path = d3.path();
-          const startX = d.source.y + (d.source.data.name ? d.source.data.name.length * 8 + 60 : 100);
+          const startX = d.source.y + (d.source.data.name ? d.source.data.name.length * 10 + 80 : 120); // Увеличили
           path.moveTo(startX, d.source.x);
           path.lineTo(startX, d.source.x);
           return path.toString();
@@ -1051,9 +1054,9 @@
 
     function diagonal(s, d) {
       const path = d3.path();
-      const startX = s.y + (s.data.name ? s.data.name.length * 8 + 60 : 100);
+      const startX = s.y + (s.data.name ? s.data.name.length * 10 + 80 : 120); // Увеличили
       const startY = s.x;
-      const endX = d.y - 30;
+      const endX = d.y - 40; // Увеличили отступ
       const endY = d.x;
       
       path.moveTo(startX, startY);
