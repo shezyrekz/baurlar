@@ -221,39 +221,56 @@
   }
   
   .node-card {
-    fill: white;
-    stroke: #456d61;
+    fill: #26a69a; /* ЗЕЛЕНЫЙ ЦВЕТ КАК ВЕРХНЯЯ ПАНЕЛЬ */
+    stroke: #1e887c;
     stroke-width: 2px;
-    rx: 15px;
-    ry: 15px;
-    filter: drop-shadow(2px 2px 6px rgba(0,0,0,0.15));
+    rx: 12px;
+    ry: 12px;
+    filter: drop-shadow(2px 2px 4px rgba(0,0,0,0.2));
     transition: all 0.3s ease;
   }
   
   .node-card:hover {
-    filter: drop-shadow(3px 3px 8px rgba(0,0,0,0.2));
+    filter: drop-shadow(3px 3px 6px rgba(0,0,0,0.3));
+    fill: #2bbbad; /* Светлее при наведении */
+  }
+  
+  .node-card.selected {
+    fill: #1e887c; /* Темнее при выборе */
+    stroke: #15776b;
     stroke-width: 3px;
+    filter: drop-shadow(4px 4px 8px rgba(0,0,0,0.4));
   }
   
   .node-card.collapsed {
-    stroke: #4CAF50;
-    fill: #f8fff8;
+    fill: #4CAF50; /* Другой оттенок зеленого для свернутых */
+    stroke: #388E3C;
   }
   
   .node-card.expanded {
-    stroke: #26a69a;
-    fill: #f8fdff;
+    fill: #26a69a; /* Основной зеленый для развернутых */
+    stroke: #1e887c;
+  }
+  
+  .node-image-container {
+    clip-path: circle(50% at 50% 50%);
+  }
+  
+  .node-image {
+    pointer-events: none;
+    user-select: none;
   }
   
   .node-text {
     font-size: 13px;
     pointer-events: none;
     user-select: none;
-    fill: #333;
+    fill: white;
     font-weight: 600;
     text-anchor: start;
     dominant-baseline: central;
     font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    text-shadow: 1px 1px 2px rgba(0,0,0,0.3);
   }
   
   .link {
@@ -304,107 +321,11 @@
   <div class="floating-btn" title="Добавить узел">+</div>
 </div>
 
-<!-- СЕКЦИЯ ПОИСК -->
-<div id="search-section" class="section">
-  <div class="search-container">
-    <input type="text" class="search-box" placeholder="Поиск по именам...">
-    <div class="search-results">
-      <h3>Результаты поиска:</h3>
-      <div id="search-results-list"></div>
-    </div>
-  </div>
-</div>
-
-<!-- СЕКЦИЯ ДОБАВИТЬ -->
-<div id="add-section" class="section">
-  <div class="add-form">
-    <h2>Добавить нового человека</h2>
-    <div class="form-group">
-      <label for="person-name">Имя:</label>
-      <input type="text" id="person-name" placeholder="Введите имя">
-    </div>
-    <div class="form-group">
-      <label for="parent-select">Родитель:</label>
-      <select id="parent-select">
-        <option value="">Выберите родителя</option>
-      </select>
-    </div>
-    <div class="form-group">
-      <label for="person-info">Дополнительная информация:</label>
-      <input type="text" id="person-info" placeholder="Годы жизни, достижения...">
-    </div>
-    <button class="submit-btn">Добавить в дерево</button>
-  </div>
-</div>
-
-<!-- СЕКЦИЯ ПОМОЩЬ -->
-<div id="help-section" class="section">
-  <div class="help-content">
-    <h2>Помощь по использованию Шежіре</h2>
-    
-    <div class="help-item">
-      <h3>👥 Управление деревом</h3>
-      <p>• Кликните на кружок, чтобы развернуть/свернуть ветку</p>
-      <p>• Используйте кнопку "+" в правом нижнем углу для быстрого добавления</p>
-      <p>• Все узлы можно раскрывать/скрывать по клику</p>
-      <p>• <strong>Зажмите левую кнопку мыши и двигайте для перемещения дерева</strong></p>
-      <p>• <strong>Используйте колесико мыши для увеличения/уменьшения</strong></p>
-    </div>
-    
-    <div class="help-item">
-      <h3>🔍 Поиск</h3>
-      <p>• Введите имя в поле поиска</p>
-      <p>• Кликните на результат для перехода к этому человеку в дереве</p>
-    </div>
-    
-    <div class="help-item">
-      <h3>👤 Добавление людей</h3>
-      <p>• Заполните форму в разделе "Добавить"</p>
-      <p>• Выберите родителя из существующих в дереве</p>
-      <p>• При необходимости добавьте дополнительную информацию</p>
-    </div>
-    
-    <div class="help-item">
-      <h3>📊 Статистика</h3>
-      <p>• Просматривайте общую статистику вашего дерева</p>
-      <p>• Узнайте количество людей на разных уровнях</p>
-    </div>
-  </div>
-</div>
-
-<!-- СЕКЦИЯ СТАТИСТИКА -->
-<div id="stats-section" class="section">
-  <div class="stats-container">
-    <div class="stat-card">
-      <h3>Всего людей</h3>
-      <div class="stat-number" id="total-people">0</div>
-      <div class="stat-label">в дереве</div>
-    </div>
-    
-    <div class="stat-card">
-      <h3>Уровней</h3>
-      <div class="stat-number" id="total-levels">0</div>
-      <div class="stat-label">глубина дерева</div>
-    </div>
-    
-    <div class="stat-card">
-      <h3>Веток</h3>
-      <div class="stat-number" id="total-branches">0</div>
-      <div class="stat-label">основные ветви</div>
-    </div>
-    
-    <div class="stat-card">
-      <h3>Листьев</h3>
-      <div class="stat-number" id="total-leaves">0</div>
-      <div class="stat-label">конечные узлы</div>
-    </div>
-  </div>
-</div>
-
 <script src="https://d3js.org/d3.v7.min.js"></script>
 <script>
   // ГЛОБАЛЬНЫЕ ПЕРЕМЕННЫЕ
   let i = 0;
+  let selectedNode = null;
   let currentTreeData = {
     name: "Алаш",
     children: [
@@ -462,34 +383,6 @@
     ]
   };
 
-  // ========== ПЕРЕКЛЮЧЕНИЕ СЕКЦИЙ ==========
-  const sections = document.querySelectorAll('.section');
-  const icons = document.querySelectorAll('header .icon');
-  
-  icons.forEach(icon => {
-    icon.addEventListener('click', function() {
-      const sectionId = this.getAttribute('data-section');
-      
-      icons.forEach(i => i.classList.remove('active'));
-      this.classList.add('active');
-      
-      sections.forEach(section => section.classList.remove('active'));
-      document.getElementById(`${sectionId}-section`).classList.add('active');
-      
-      if (sectionId === 'people') {
-        setTimeout(initTree, 100);
-      }
-      
-      if (sectionId === 'stats') {
-        updateStatistics();
-      }
-      
-      if (sectionId === 'add') {
-        updateParentSelect();
-      }
-    });
-  });
-
   // ========== ИНИЦИАЛИЗАЦИЯ ДЕРЕВА ==========
 function initTree() {
   const width = window.innerWidth;
@@ -515,7 +408,6 @@ function initTree() {
   svg.call(zoom)
     .on("dblclick.zoom", null);
 
-  // Настраиваем дерево
   const treeLayout = d3.tree()
     .nodeSize([100, 250]);
 
@@ -564,6 +456,21 @@ function initTree() {
       .style("opacity", 0)
       .on("click", (e, d) => {
         e.stopPropagation();
+        
+        // Снимаем выделение с предыдущего узла
+        if (selectedNode) {
+          d3.select(selectedNode).select(".node-card").classed("selected", false);
+        }
+        
+        // Выделяем текущий узел
+        const currentNode = d3.select(e.currentTarget);
+        currentNode.select(".node-card").classed("selected", true);
+        selectedNode = e.currentTarget;
+        
+        // Показываем информацию о выбранном узле
+        showNodeInfo(d);
+        
+        // Раскрываем/сворачиваем
         if (d.children) {
           d._children = d.children;
           d.children = null;
@@ -574,15 +481,20 @@ function initTree() {
         updateTree(d);
       });
 
-    // КАРТОЧКА УЗЛА
+    // КАРТОЧКА УЗЛА - ВСЕ ЗЕЛЕНЫЕ
     nodeEnter.append("rect")
-      .attr("class", d => `node-card ${d._children ? 'collapsed' : (d.children ? 'expanded' : '')}`)
+      .attr("class", d => {
+        let cardClass = "node-card";
+        if (d._children) cardClass += " collapsed";
+        if (d.children) cardClass += " expanded";
+        return cardClass;
+      })
       .attr("x", 0)
       .attr("y", -25)
       .attr("width", 160)
       .attr("height", 50)
-      .attr("rx", 15)
-      .attr("ry", 15);
+      .attr("rx", 12)
+      .attr("ry", 12);
 
     // КРУГЛАЯ МАСКА ДЛЯ ФОТО
     nodeEnter.append("clipPath")
@@ -620,7 +532,12 @@ function initTree() {
 
     // Обновляем класс карточки
     nodeUpdate.select("rect")
-      .attr("class", d => `node-card ${d._children ? 'collapsed' : (d.children ? 'expanded' : '')}`);
+      .attr("class", d => {
+        let cardClass = "node-card";
+        if (d._children) cardClass += " collapsed";
+        if (d.children) cardClass += " expanded";
+        return cardClass;
+      });
 
     // Подгоняем ширину карточки под текст
     nodeUpdate.select("rect")
@@ -658,7 +575,6 @@ function initTree() {
         const startY = sourceNode.x;
         const endY = targetNode.x;
         
-        // Плавная кривая Безье
         const controlX1 = startX + (endX - startX) * 0.5;
         const controlX2 = startX + (endX - startX) * 0.5;
         
@@ -685,6 +601,21 @@ function initTree() {
     });
   }
 
+  // Функция показа информации о выбранном узле
+  function showNodeInfo(node) {
+    const depthNames = ["Ата", "Жуз", "Ру", "Тайпа", "Ру", "Ата", "Бала"];
+    const depthName = depthNames[Math.min(node.depth, depthNames.length - 1)];
+    
+    const info = `
+      Выбрано: <strong>${node.data.name}</strong>
+      Уровень: ${depthName} (${node.depth})
+      ${node.children || node._children ? `Детей: ${(node.children || node._children).length}` : 'Конечный узел'}
+    `;
+    
+    // Можно заменить на более красивый попап
+    console.log(info);
+  }
+
   // Центрируем дерево после загрузки
   setTimeout(() => {
     const initialTransform = d3.zoomIdentity
@@ -694,178 +625,9 @@ function initTree() {
   }, 100);
 }
 
-  // ========== ФУНКЦИЯ ДЛЯ ПОИСКА ==========
-  function searchInTree(query) {
-    const results = [];
-    const searchLower = query.toLowerCase();
-    
-    function traverse(node, path = []) {
-      if (node.data && node.data.name.toLowerCase().includes(searchLower)) {
-        results.push({
-          name: node.data.name,
-          path: [...path, node.data.name].join(' → '),
-          node: node
-        });
-      }
-      
-      if (node.children) {
-        node.children.forEach(child => traverse(child, [...path, node.data.name]));
-      }
-      if (node._children) {
-        node._children.forEach(child => traverse(child, [...path, node.data.name]));
-      }
-    }
-    
-    const root = d3.hierarchy(currentTreeData);
-    traverse(root);
-    return results;
-  }
-
-  // ========== ПОИСК ==========
-  const searchInput = document.querySelector('.search-box');
-  const resultsList = document.getElementById('search-results-list');
-  
-  searchInput.addEventListener('input', function() {
-    const query = this.value.trim();
-    
-    if (query.length < 2) {
-      resultsList.innerHTML = '<p>Введите минимум 2 символа</p>';
-      return;
-    }
-    
-    const results = searchInTree(query);
-    
-    if (results.length === 0) {
-      resultsList.innerHTML = '<p>Ничего не найдено</p>';
-      return;
-    }
-    
-    let html = '';
-    results.forEach(result => {
-      html += `
-        <div class="result-item" data-name="${result.name}">
-          <strong>${result.name}</strong>
-          <div style="font-size: 12px; color: #666;">${result.path}</div>
-        </div>
-      `;
-    });
-    
-    resultsList.innerHTML = html;
-    
-    document.querySelectorAll('.result-item').forEach(item => {
-      item.addEventListener('click', function() {
-        const name = this.getAttribute('data-name');
-        alert(`Переход к: ${name}\n(Функционал перехода будет добавлен позже)`);
-      });
-    });
-  });
-
-  // ========== ДОБАВЛЕНИЕ ==========
-  function updateParentSelect() {
-    const select = document.getElementById('parent-select');
-    select.innerHTML = '<option value="">Выберите родителя</option>';
-    
-    function addOptions(node, depth = 0) {
-      const indent = '— '.repeat(depth);
-      select.innerHTML += `<option value="${node.data.name}">${indent}${node.data.name}</option>`;
-      
-      if (node.children) {
-        node.children.forEach(child => addOptions(child, depth + 1));
-      }
-    }
-    
-    const root = d3.hierarchy(currentTreeData);
-    addOptions(root);
-  }
-
-  const addForm = document.querySelector('.add-form');
-  addForm.addEventListener('submit', function(e) {
-    e.preventDefault();
-    
-    const name = document.getElementById('person-name').value;
-    const parent = document.getElementById('parent-select').value;
-    const info = document.getElementById('person-info').value;
-    
-    if (!name) {
-      alert('Введите имя');
-      return;
-    }
-    
-    if (!parent) {
-      alert('Выберите родителя');
-      return;
-    }
-    
-    alert(`Добавлен: ${name}\nРодитель: ${parent}\nИнфо: ${info || 'нет'}`);
-    this.reset();
-  });
-
-  // ========== СТАТИСТИКА ==========
-  function updateStatistics() {
-    function countNodes(node) {
-      let total = 1;
-      let leaves = 0;
-      let maxDepth = 0;
-      
-      function traverse(n, depth = 0) {
-        maxDepth = Math.max(maxDepth, depth);
-        
-        const hasChildren = (n.children && n.children.length > 0) || 
-                          (n._children && n._children.length > 0);
-        
-        if (!hasChildren) {
-          leaves++;
-        }
-        
-        if (n.children) {
-          n.children.forEach(child => {
-            total++;
-            traverse(child, depth + 1);
-          });
-        }
-        if (n._children) {
-          n._children.forEach(child => {
-            total++;
-            traverse(child, depth + 1);
-          });
-        }
-      }
-      
-      traverse(node);
-      
-      return {
-        total,
-        leaves,
-        maxDepth,
-        branches: node.children ? node.children.length : 0
-      };
-    }
-    
-    const root = d3.hierarchy(currentTreeData);
-    const stats = countNodes(root);
-    
-    document.getElementById('total-people').textContent = stats.total;
-    document.getElementById('total-levels').textContent = stats.maxDepth + 1;
-    document.getElementById('total-branches').textContent = stats.branches;
-    document.getElementById('total-leaves').textContent = stats.leaves;
-  }
-
-  // ========== КНОПКА + ==========
-  document.querySelector('.floating-btn').addEventListener('click', function() {
-    icons.forEach(i => i.classList.remove('active'));
-    document.querySelector('[data-section="add"]').classList.add('active');
-    
-    sections.forEach(s => s.classList.remove('active'));
-    document.getElementById('add-section').classList.add('active');
-    
-    updateParentSelect();
-  });
-
   // ========== ИНИЦИАЛИЗАЦИЯ ПРИ ЗАГРУЗКЕ ==========
   document.addEventListener('DOMContentLoaded', function() {
     initTree();
-    updateStatistics();
-    updateParentSelect();
     
     window.addEventListener('resize', function() {
       if (document.getElementById('people-section').classList.contains('active')) {
