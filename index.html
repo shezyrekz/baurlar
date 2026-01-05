@@ -264,51 +264,42 @@
   
   /* ОВАЛЬНЫЕ КАРТОЧКИ (МЕНЬШЕ) С КРУЖКОМ У ЛЕВОГО КРАЯ */
   .node-card {
-    fill: #26a69a;
-    stroke: #1e887c;
+    fill: #8fbc8f; /* СВЕТЛО-ЗЕЛЕНЫЙ КАК ВЕРХНЯЯ ПАНЕЛЬ */
+    stroke: #789d78;
     stroke-width: 2px;
-    rx: 20px;  /* Чуть меньше закругление */
-    ry: 20px;
+    rx: 25px;  /* Овальная форма */
+    ry: 25px;
     filter: drop-shadow(2px 2px 4px rgba(0,0,0,0.2));
     transition: all 0.3s ease;
   }
   
   .node-card:hover {
     filter: drop-shadow(3px 3px 6px rgba(0,0,0,0.3));
-    fill: #2bbbad;
+    fill: #a8d4a8; /* Светлее при наведении */
   }
   
   .node-card.selected {
-    fill: #1e887c;
-    stroke: #15776b;
+    fill: #ffffff; /* БЕЛЫЙ при выборе */
+    stroke: #cccccc;
     stroke-width: 3px;
     filter: drop-shadow(4px 4px 8px rgba(0,0,0,0.4));
   }
   
   .node-card.collapsed {
-    fill: #4CAF50;
-    stroke: #388E3C;
+    fill: #8fbc8f; /* Обычный зеленый */
+    stroke: #789d78;
   }
   
   .node-card.expanded {
-    fill: #26a69a;
-    stroke: #1e887c;
+    fill: #8fbc8f; /* Обычный зеленый */
+    stroke: #789d78;
   }
   
-  /* Цвета для разных уровней */
-  .node-card.root { /* Для корня "Алаш" */
-    fill: #d32f2f;
-    stroke: #b71c1c;
-  }
-  
-  .node-card.level-1 { /* Для жузов */
-    fill: #1976d2;
-    stroke: #1565c0;
-  }
-  
-  .node-card.level-2 { /* Для родов */
-    fill: #388e3c;
-    stroke: #2e7d32;
+  /* УБИРАЕМ ЦВЕТА ДЛЯ УРОВНЕЙ - ВСЕ ЗЕЛЕНЫЕ */
+  .node-card.root,
+  .node-card.level-1,
+  .node-card.level-2 {
+    /* Все наследуют основной зеленый цвет */
   }
   
   .node-image-container {
@@ -975,7 +966,7 @@
                               },
                               { 
                                 name: "Өмірқұл",
-                        children: [
+                                children: [
                                   { 
                                     name: "Серікбай",
                                     children: [
@@ -1983,10 +1974,10 @@
       nodeEnter.append("rect")
         .attr("class", d => {
           let cardClass = "node-card";
-          // Добавляем классы для уровней
-          if (d.depth === 0) cardClass += " root";
-          if (d.depth === 1) cardClass += " level-1";
-          if (d.depth === 2) cardClass += " level-2";
+          // УБИРАЕМ КЛАССЫ ДЛЯ ЦВЕТОВ УРОВНЕЙ - ВСЕ ЗЕЛЕНЫЕ
+          // if (d.depth === 0) cardClass += " root";
+          // if (d.depth === 1) cardClass += " level-1";
+          // if (d.depth === 2) cardClass += " level-2";
           if (d._children) cardClass += " collapsed";
           if (d.children) cardClass += " expanded";
           return cardClass;
@@ -2040,9 +2031,10 @@
       nodeUpdate.select("rect")
         .attr("class", d => {
           let cardClass = "node-card";
-          if (d.depth === 0) cardClass += " root";
-          if (d.depth === 1) cardClass += " level-1";
-          if (d.depth === 2) cardClass += " level-2";
+          // УБИРАЕМ КЛАССЫ ДЛЯ ЦВЕТОВ УРОВНЕЙ - ВСЕ ЗЕЛЕНЫЕ
+          // if (d.depth === 0) cardClass += " root";
+          // if (d.depth === 1) cardClass += " level-1";
+          // if (d.depth === 2) cardClass += " level-2";
           if (d._children) cardClass += " collapsed";
           if (d.children) cardClass += " expanded";
           return cardClass;
