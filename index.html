@@ -412,19 +412,20 @@
     text-shadow: 1px 1px 2px rgba(0,0,0,0.3);
   }
   
-  /* УСИЛЕННЫЕ СТИЛИ ДЛЯ ВЕТОК */
-.link {
-  fill: none;
-  stroke: #000000 !important; /* ЧЕРНЫЙ */
-  stroke-width: 4px !important; /* ТОЛЩИНА 4px */
-  opacity: 1 !important;
-  z-index: 1;
-}
-
-.link:hover {
-  stroke: #FF0000 !important; /* КРАСНЫЙ при наведении */
-  stroke-width: 6px !important;
-}
+  /* ВЕТКИ - ЧЕРНЫЕ И ВИДИМЫЕ */
+  .link {
+    fill: none;
+    stroke: #696969; /* ЧЕРНЫЙ ЦВЕТ */
+    stroke-width: 2px;
+    opacity: 1; /* ПОЛНАЯ ВИДИМОСТЬ */
+    transition: opacity 0.3s;
+  }
+  
+  .link:hover {
+    opacity: 1;
+    stroke-width: 3px;
+    stroke: #333333; /* Темнее при наведении */
+  }
   
   .floating-btn {
     position: fixed;
@@ -642,7 +643,7 @@
       <h3>📋 Система заявок</h3>
       <p>• Только администратор может одобрять заявки</p>
       <p>• Каждая заявка содержит информацию о новом человеке</p>
-      <p>• После одобрения человек автоматически добавляется в дереве</p>
+      <p>• После одобрения человек автоматически добавляется в дерево</p>
     </div>
     
     <div class="help-item">
@@ -910,7 +911,7 @@
         requestsPoints: [
           "Тек әкімші өтініштерді мақұлдай алады",
           "Әрбір өтініште жаңа адам туралы ақпарат бар",
-          "После одобрения человек автоматически добавляется в дереве"
+          "Мақұлданғаннан кейін адам ағашта автоматты түрде қосылады"
         ],
         statsTitle: "📊 Статистика",
         statsPoints: [
@@ -1267,7 +1268,7 @@
                                         ]
                                       },
                                       { 
-                                        name: "Смадияар",
+                                        name: "Смадияр",
                                         children: [
                                           { 
                                             name: "Данияр",
@@ -1555,7 +1556,7 @@ children: [
                           { name: "Жүніс" },
                           { name: "Омар" },
                           { name: "Қайырлы" },
-                          { name: "Мадияар" }
+                          { name: "Мадияр" }
                         ]
                       },
                       { 
@@ -2438,17 +2439,9 @@ children: [
         .attr("y", -20)
         .attr("width", 40)
         .attr("height", 40)
-        .attr("href", d => {
-          if (d.data && d.data.photo) {
-            return `images/${d.data.photo}`;
-          }
-          return "images/yurt.png";
-        })
+        .attr("href", "images/yurt.png")
         .attr("clip-path", d => `url(#clip-${d.id})`)
-        .attr("preserveAspectRatio", "xMidYMid slice")
-        .on("error", function() {
-          d3.select(this).attr("href", "images/yurt.png");
-        });
+        .attr("preserveAspectRatio", "xMidYMid slice");
 
       // ТЕКСТ - СДВИГАЕМ ВПРАВО ОТ КРУЖКА
       nodeEnter.append("text")
@@ -2470,14 +2463,17 @@ children: [
         .attr("transform", d => `translate(${d.y},${d.x})`)
         .style("opacity", 1);
 
-      // Сначала обновляем карточку
+      // Обновляем класс карточки
       nodeUpdate.select("rect")
         .attr("class", d => {
           let cardClass = "node-card";
           if (d._children) cardClass += " collapsed";
           if (d.children) cardClass += " expanded";
           return cardClass;
-        })
+        });
+
+      // Подгоняем ширину карточки под текст
+      nodeUpdate.select("rect")
         .transition()
         .duration(duration)
         .attr("width", function() {
@@ -2486,83 +2482,43 @@ children: [
           return Math.max(150, textWidth + 70);
         });
 
-      // Потом обновляем фотографии
-      nodeUpdate.select("image")
+      /* ===== LINKS ===== */
+      const link = g.selectAll("path.link")
+        .data(links, d => d.target.id);
+
+      link.exit()
+        .transition().duration(duration)
+        .style("opacity", 0)
+        .remove();
+
+      link.enter()
+        .append("path")
+        .attr("class", "link")
+        .merge(link)
         .transition()
         .duration(duration)
-        .attr("href", d => {
-          if (d.data && d.data.photo) {
-            return `images/${d.data.photo}`;
-          }
-          return "images/yurt.png";
+        .attr("d", d => {
+          const sourceNode = d.source;
+          const targetNode = d.target;
+          const sourceRect = sourceNode.nodeRectWidth || 150;
+          const targetRect = targetNode.nodeRectWidth || 150;
+          
+          const startX = sourceNode.y + sourceRect;
+          const endX = targetNode.y;
+          const startY = sourceNode.x;
+          const endY = targetNode.x;
+          
+          const controlX1 = startX + (endX - startX) * 0.5;
+          const controlX2 = startX + (endX - startX) * 0.5;
+          
+          return `
+            M ${startX} ${startY}
+            C ${controlX1} ${startY},
+              ${controlX2} ${endY},
+              ${endX} ${endY}
+          `;
         })
-        .on("error", function() {
-          d3.select(this).attr("href", "images/yurt.png");
-        });
-
-      /* ===== LINKS ===== */
-      function updateTree(source) {
-  const duration = 400;
-  treeLayout(treeRoot);
-
-  const nodes = treeRoot.descendants();
-  const links = treeRoot.links();
-
-  // ===== СНАЧАЛА РИСУЕМ ССЫЛКИ (ЭТО ВАЖНО!) =====
-  const link = g.selectAll("path.link")
-    .data(links, d => d.target.id);
-
-  link.exit()
-    .transition().duration(duration)
-    .style("opacity", 0)
-    .remove();
-
-  link.enter()
-    .append("path")
-    .attr("class", "link")
-    .merge(link)
-    .transition()
-    .duration(duration)
-    .attr("d", d => {
-      // Простая прямая линия от правого края родителя к левому краю ребенка
-      const startX = d.source.y + 150; // Правый край родителя
-      const startY = d.source.x + 25;  // Середина по высоте
-      const endX = d.target.y;         // Левый край ребенка
-      const endY = d.target.x + 25;    // Середина по высоте
-      
-      return `M ${startX} ${startY} L ${endX} ${endY}`;
-    })
-    .style("opacity", 1);
-
-  // ===== ПОТОМ РИСУЕМ УЗЛЫ =====
-  const node = g.selectAll("g.node-group")
-    .data(nodes, d => d.id || (d.id = ++i));
-    
-  // ... остальной код для узлов остается без изменений ...
-const link = g.selectAll("path.link")
-  .data(links, d => d.target.id);
-
-link.exit()
-  .transition().duration(duration)
-  .style("opacity", 0)
-  .remove();
-
-link.enter()
-  .append("path")
-  .attr("class", "link")
-  .merge(link)
-  .transition()
-  .duration(duration)
-  .attr("d", d => {
-    // Простая прямая линия от правого края родителя к левому краю ребенка
-    const startX = d.source.y + 150; // Правый край родителя
-    const startY = d.source.x + 25;  // Середина по высоте
-    const endX = d.target.y;         // Левый край ребенка
-    const endY = d.target.x + 25;    // Середина по высоте
-    
-    return `M ${startX} ${startY} L ${endX} ${endY}`;
-  })
-  .style("opacity", 1);
+        .style("opacity", 1);
 
       // Сохраняем ширину карточки для узла
       nodes.forEach(d => {
@@ -2999,4 +2955,4 @@ link.enter()
   });
 </script>
 </body>
-</html>
+</html> вот что неправильно
