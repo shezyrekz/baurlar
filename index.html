@@ -2434,14 +2434,21 @@ children: [
         .attr("r", 20);
 
       // ФОТОГРАФИЯ - ПРЯМО У ЛЕВОГО КРАЯ
-      nodeEnter.append("image")
-        .attr("x", 5)
-        .attr("y", -20)
-        .attr("width", 40)
-        .attr("height", 40)
-        .attr("href", "images/yurt.png")
-        .attr("clip-path", d => `url(#clip-${d.id})`)
-        .attr("preserveAspectRatio", "xMidYMid slice");
+nodeEnter.append("image")
+  .attr("x", 5)
+  .attr("y", -20)
+  .attr("width", 40)
+  .attr("height", 40)
+  .attr("href", d => {
+    // Для узла Арғын используем фото argyn.jpeg
+    if (d.data.name === "Арғын") {
+      return "images/argyn.jpeg";
+    }
+    // Для всех остальных - стандартное изображение юрты
+    return "images/yurt.png";
+  })
+  .attr("clip-path", d => `url(#clip-${d.id})`)
+  .attr("preserveAspectRatio", "xMidYMid slice");
 
       // ТЕКСТ - СДВИГАЕМ ВПРАВО ОТ КРУЖКА
       nodeEnter.append("text")
@@ -2955,4 +2962,4 @@ children: [
   });
 </script>
 </body>
-</html> вот что неправильно
+</html>
