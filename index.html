@@ -412,20 +412,19 @@
     text-shadow: 1px 1px 2px rgba(0,0,0,0.3);
   }
   
-  /* ВЕТКИ - ЧЕРНЫЕ И ВИДИМЫЕ */
-  .link {
-    fill: none;
-    stroke: #696969; /* ЧЕРНЫЙ ЦВЕТ */
-    stroke-width: 2px;
-    opacity: 1; /* ПОЛНАЯ ВИДИМОСТЬ */
-    transition: opacity 0.3s;
-  }
-  
-  .link:hover {
-    opacity: 1;
-    stroke-width: 3px;
-    stroke: #333333; /* Темнее при наведении */
-  }
+  /* УСИЛЕННЫЕ СТИЛИ ДЛЯ ВЕТОК */
+.link {
+  fill: none;
+  stroke: #000000 !important; /* ЧЕРНЫЙ */
+  stroke-width: 4px !important; /* ТОЛЩИНА 4px */
+  opacity: 1 !important;
+  z-index: 1;
+}
+
+.link:hover {
+  stroke: #FF0000 !important; /* КРАСНЫЙ при наведении */
+  stroke-width: 6px !important;
+}
   
   .floating-btn {
     position: fixed;
@@ -2502,6 +2501,44 @@ children: [
         });
 
       /* ===== LINKS ===== */
+      function updateTree(source) {
+  const duration = 400;
+  treeLayout(treeRoot);
+
+  const nodes = treeRoot.descendants();
+  const links = treeRoot.links();
+
+  // ===== СНАЧАЛА РИСУЕМ ССЫЛКИ (ЭТО ВАЖНО!) =====
+  const link = g.selectAll("path.link")
+    .data(links, d => d.target.id);
+
+  link.exit()
+    .transition().duration(duration)
+    .style("opacity", 0)
+    .remove();
+
+  link.enter()
+    .append("path")
+    .attr("class", "link")
+    .merge(link)
+    .transition()
+    .duration(duration)
+    .attr("d", d => {
+      // Простая прямая линия от правого края родителя к левому краю ребенка
+      const startX = d.source.y + 150; // Правый край родителя
+      const startY = d.source.x + 25;  // Середина по высоте
+      const endX = d.target.y;         // Левый край ребенка
+      const endY = d.target.x + 25;    // Середина по высоте
+      
+      return `M ${startX} ${startY} L ${endX} ${endY}`;
+    })
+    .style("opacity", 1);
+
+  // ===== ПОТОМ РИСУЕМ УЗЛЫ =====
+  const node = g.selectAll("g.node-group")
+    .data(nodes, d => d.id || (d.id = ++i));
+    
+  // ... остальной код для узлов остается без изменений ...
 const link = g.selectAll("path.link")
   .data(links, d => d.target.id);
 
