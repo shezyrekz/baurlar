@@ -2378,37 +2378,67 @@ children: [
         .remove();
 
       /* ===== ENTER ===== */
-      const nodeEnter = node.enter()
-        .append("g")
-        .attr("class", "node-group")
-        .attr("transform", `translate(${source.y0},${source.x0})`)
-        .style("opacity", 0)
-        .on("click", (e, d) => {
-          e.stopPropagation();
-          
-          // Снимаем выделение с предыдущего узла
-          if (selectedNode) {
-            d3.select(selectedNode).select(".node-card").classed("selected", false);
-          }
-          
-          // Выделяем текущий узел
-          const currentNode = d3.select(e.currentTarget);
-          currentNode.select(".node-card").classed("selected", true);
-          selectedNode = e.currentTarget;
-          
-          // Показываем информацию о выбранном узле
-          showNodeInfo(d);
-          
-          // Раскрываем/сворачиваем
-          if (d.children) {
-            d._children = d.children;
-            d.children = null;
-          } else {
-            d.children = d._children;
-            d._children = null;
-          }
-          updateTree(d);
-        });
+const nodeEnter = node.enter()
+  .append("g")
+  .attr("class", "node-group")
+  .attr("transform", `translate(${source.y0},${source.x0})`)
+  .style("opacity", 0)
+  .on("click", (e, d) => {
+    // ... ваш код клика ...
+  });
+
+// 1. СНАЧАЛА карточка
+nodeEnter.append("rect")
+  .attr("class", d => {
+    let cardClass = "node-card";
+    if (d._children) cardClass += " collapsed";
+    if (d.children) cardClass += " expanded";
+    return cardClass;
+  })
+  .attr("x", 0)
+  .attr("y", -25)
+  .attr("width", 150)
+  .attr("height", 50)
+  .attr("rx", 25)
+  .attr("ry", 25);
+
+// 2. ПОТОМ клип-пат для фото
+nodeEnter.append("clipPath")
+  .attr("id", d => `clip-${d.id}`)
+  .append("circle")
+  .attr("cx", 25)
+  .attr("cy", 0)
+  .attr("r", 20);
+
+// 3. ПОТОМ фотография
+nodeEnter.append("image")
+  .attr("x", 5)
+  .attr("y", -20)
+  .attr("width", 40)
+  .attr("height", 40)
+  .attr("href", d => {
+    if (d.data && d.data.photo) {
+      return `images/${d.data.photo}`;
+    }
+    return "images/yurt.png";
+  })
+  .attr("clip-path", d => `url(#clip-${d.id})`)
+  .attr("preserveAspectRatio", "xMidYMid slice")
+  .on("error", function() {
+    d3.select(this).attr("href", "images/yurt.png");
+  });
+
+// 4. ПОТОМ текст
+nodeEnter.append("text")
+  .attr("class", "node-text")
+  .attr("x", 55)
+  .attr("y", 0)
+  .style("font-size", "11px")
+  .text(d => {
+    const name = d.data.name;
+    if (name.length > 12) return name.substring(0, 11) + "...";
+    return name;
+  });
 
      // ФОТОГРАФИЯ - ПРЯМО У ЛЕВОГО КРАЯ
 nodeEnter.append("image")
