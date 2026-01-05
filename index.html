@@ -133,10 +133,12 @@
     padding: 10px;
     border-bottom: 1px solid #eee;
     cursor: pointer;
+    transition: all 0.2s;
   }
   
   .result-item:hover {
     background: #f0f9f7;
+    transform: translateX(5px);
   }
   
   /* СЕКЦИЯ ДОБАВИТЬ */
@@ -165,7 +167,8 @@
   }
   
   .form-group input,
-  .form-group select {
+  .form-group select,
+  .form-group textarea {
     width: 100%;
     padding: 10px;
     border: 2px solid #ddd;
@@ -174,8 +177,14 @@
     box-sizing: border-box;
   }
   
+  .form-group textarea {
+    height: 100px;
+    resize: vertical;
+  }
+  
   .form-group input:focus,
-  .form-group select:focus {
+  .form-group select:focus,
+  .form-group textarea:focus {
     border-color: #26a69a;
     outline: none;
   }
@@ -193,6 +202,80 @@
   
   .submit-btn:hover {
     background: #1e887c;
+  }
+  
+  /* СЕКЦИЯ ЗАЯВКИ */
+  #requests-section {
+    background: #f6f1d1;
+  }
+  
+  .requests-container {
+    max-width: 800px;
+    margin: 0 auto;
+    background: white;
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+  }
+  
+  .request-item {
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    padding: 15px;
+    margin-bottom: 15px;
+    background: #f9f9f9;
+  }
+  
+  .request-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 10px;
+  }
+  
+  .request-name {
+    font-weight: bold;
+    font-size: 18px;
+    color: #26a69a;
+  }
+  
+  .request-date {
+    font-size: 12px;
+    color: #888;
+  }
+  
+  .request-details {
+    margin: 10px 0;
+    color: #555;
+  }
+  
+  .request-parent {
+    font-style: italic;
+    color: #666;
+  }
+  
+  .request-actions {
+    display: flex;
+    gap: 10px;
+    justify-content: flex-end;
+  }
+  
+  .action-btn {
+    padding: 8px 15px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 14px;
+  }
+  
+  .approve-btn {
+    background: #4CAF50;
+    color: white;
+  }
+  
+  .reject-btn {
+    background: #f44336;
+    color: white;
   }
   
   /* СЕКЦИЯ ПОМОЩЬ */
@@ -280,9 +363,22 @@
   
   .node-card.selected {
     fill: #ffffff; /* БЕЛЫЙ при выборе */
-    stroke: #cccccc;
+    stroke: #26a69a;
     stroke-width: 3px;
     filter: drop-shadow(4px 4px 8px rgba(0,0,0,0.4));
+  }
+  
+  .node-card.highlighted {
+    fill: #ffeb3b; /* ЖЕЛТЫЙ для подсветки при поиске */
+    stroke: #ff9800;
+    stroke-width: 3px;
+    animation: pulse 1.5s infinite;
+  }
+  
+  @keyframes pulse {
+    0% { filter: drop-shadow(0 0 5px rgba(255, 152, 0, 0.5)); }
+    50% { filter: drop-shadow(0 0 15px rgba(255, 152, 0, 0.8)); }
+    100% { filter: drop-shadow(0 0 5px rgba(255, 152, 0, 0.5)); }
   }
   
   .node-card.collapsed {
@@ -293,13 +389,6 @@
   .node-card.expanded {
     fill: #8fbc8f; /* Обычный зеленый */
     stroke: #789d78;
-  }
-  
-  /* УБИРАЕМ ЦВЕТА ДЛЯ УРОВНЕЙ - ВСЕ ЗЕЛЕНЫЕ */
-  .node-card.root,
-  .node-card.level-1,
-  .node-card.level-2 {
-    /* Все наследуют основной зеленый цвет */
   }
   
   .node-image-container {
@@ -356,6 +445,42 @@
     z-index: 100;
   }
   
+  .admin-btn {
+    position: fixed;
+    bottom: 100px;
+    right: 30px;
+    background: #9C27B0;
+    color: white;
+    border-radius: 50%;
+    width: 56px;
+    height: 56px;
+    font-size: 20px;
+    line-height: 56px;
+    text-align: center;
+    cursor: pointer;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.3);
+    user-select: none;
+    z-index: 100;
+  }
+  
+  /* УВЕДОМЛЕНИЯ */
+  .notification {
+    position: fixed;
+    top: 70px;
+    right: 20px;
+    background: #4CAF50;
+    color: white;
+    padding: 15px 20px;
+    border-radius: 5px;
+    box-shadow: 0 3px 10px rgba(0,0,0,0.2);
+    z-index: 1001;
+    display: none;
+  }
+  
+  .notification.error {
+    background: #f44336;
+  }
+  
   /* АДАПТИВНОСТЬ */
   @media (max-width: 768px) {
     header {
@@ -383,8 +508,23 @@
     
     .help-content,
     .add-form,
-    .search-container {
+    .search-container,
+    .requests-container {
       padding: 15px;
+    }
+    
+    .floating-btn,
+    .admin-btn {
+      bottom: 20px;
+      right: 20px;
+      width: 50px;
+      height: 50px;
+      line-height: 50px;
+      font-size: 30px;
+    }
+    
+    .admin-btn {
+      bottom: 80px;
     }
   }
 </style>
@@ -395,6 +535,7 @@
   <div class="icon active" title="Люди" data-section="people"><i class="fas fa-users"></i></div>
   <div class="icon" title="Поиск" data-section="search"><i class="fas fa-search"></i></div>
   <div class="icon" title="Добавить" data-section="add"><i class="fas fa-user-plus"></i></div>
+  <div class="icon" title="Заявки" data-section="requests"><i class="fas fa-tasks"></i></div>
   <div class="icon" title="Помощь" data-section="help"><i class="fas fa-question-circle"></i></div>
   <div class="icon" title="Статистика" data-section="stats"><i class="fas fa-chart-bar"></i></div>
   
@@ -415,6 +556,7 @@
 <div id="people-section" class="section active">
   <div id="tree-container"></div>
   <div class="floating-btn" title="Добавить узел">+</div>
+  <div class="admin-btn" title="Заявки"><i class="fas fa-tasks"></i></div>
 </div>
 
 <!-- СЕКЦИЯ ПОИСК -->
@@ -432,6 +574,9 @@
 <div id="add-section" class="section">
   <div class="add-form">
     <h2>Добавить нового человека</h2>
+    <p style="color: #666; margin-bottom: 20px; font-size: 14px;">
+      <i class="fas fa-info-circle"></i> Ваша заявка будет отправлена администратору на рассмотрение
+    </p>
     <div class="form-group">
       <label for="person-name">Имя:</label>
       <input type="text" id="person-name" placeholder="Введите имя">
@@ -444,9 +589,24 @@
     </div>
     <div class="form-group">
       <label for="person-info">Дополнительная информация:</label>
-      <input type="text" id="person-info" placeholder="Годы жизни, достижения...">
+      <textarea id="person-info" placeholder="Годы жизни, достижения, место проживания..."></textarea>
     </div>
-    <button class="submit-btn">Добавить в дерево</button>
+    <div class="form-group">
+      <label for="person-email">Ваш email (для ответа):</label>
+      <input type="email" id="person-email" placeholder="example@email.com">
+    </div>
+    <button class="submit-btn" id="submit-request-btn">Отправить заявку</button>
+  </div>
+</div>
+
+<!-- СЕКЦИЯ ЗАЯВКИ (ТОЛЬКО ДЛЯ АДМИНА) -->
+<div id="requests-section" class="section">
+  <div class="requests-container">
+    <h2>Заявки на добавление</h2>
+    <p id="admin-instructions" style="color: #666; margin-bottom: 20px; font-size: 14px;">
+      <i class="fas fa-lock"></i> Эта секция доступна только администратору
+    </p>
+    <div id="requests-list"></div>
   </div>
 </div>
 
@@ -468,19 +628,29 @@
       <h3>🔍 Поиск</h3>
       <p>• Введите имя в поле поиска</p>
       <p>• Кликните на результат для перехода к этому человеку в дереве</p>
+      <p>• Найденный человек будет подсвечен желтым цветом</p>
     </div>
     
     <div class="help-item">
       <h3>👤 Добавление людей</h3>
       <p>• Заполните форму в разделе "Добавить"</p>
       <p>• Выберите родителя из существующих в дереве</p>
-      <p>• При необходимости добавьте дополнительную информацию</p>
+      <p>• Ваша заявка будет отправлена администратору на рассмотрение</p>
+      <p>• После одобрения человек появится в дереве</p>
+    </div>
+    
+    <div class="help-item">
+      <h3>📋 Система заявок</h3>
+      <p>• Только администратор может одобрять заявки</p>
+      <p>• Каждая заявка содержит информацию о новом человеке</p>
+      <p>• После одобрения человек автоматически добавляется в дерево</p>
     </div>
     
     <div class="help-item">
       <h3>📊 Статистика</h3>
       <p>• Просматривайте общую статистику вашего дерева</p>
       <p>• Узнайте количество людей на разных уровнях</p>
+      <p>• Следите за количеством веток и листьев</p>
     </div>
   </div>
 </div>
@@ -511,8 +681,23 @@
       <div class="stat-number" id="total-leaves">0</div>
       <div class="stat-label">конечные узлы</div>
     </div>
+    
+    <div class="stat-card">
+      <h3>Заявок</h3>
+      <div class="stat-number" id="total-requests">0</div>
+      <div class="stat-label">ожидают рассмотрения</div>
+    </div>
+    
+    <div class="stat-card">
+      <h3>Одобрено</h3>
+      <div class="stat-number" id="total-approved">0</div>
+      <div class="stat-label">заявок принято</div>
+    </div>
   </div>
 </div>
+
+<!-- УВЕДОМЛЕНИЯ -->
+<div class="notification" id="notification"></div>
 
 <script src="https://d3js.org/d3.v7.min.js"></script>
 <script>
@@ -520,6 +705,21 @@
   let i = 0;
   let selectedNode = null;
   let currentLanguage = 'ru'; // 'ru' или 'kk'
+  let svg = null;
+  let g = null;
+  let zoom = null;
+  let treeRoot = null;
+  
+  // БАЗА ДАННЫХ В LOCALSTORAGE
+  const STORAGE_KEYS = {
+    REQUESTS: 'shezhire_requests',
+    APPROVED: 'shezhire_approved',
+    TREE: 'shezhire_tree_data',
+    PASSWORD: 'shezhire_admin_password'
+  };
+  
+  // ПАРОЛЬ АДМИНА (можно изменить)
+  const ADMIN_PASSWORD = 'admin123';
   
   // ТЕКСТЫ НА РАЗНЫХ ЯЗЫКАХ
   const translations = {
@@ -529,28 +729,47 @@
         people: "Люди",
         search: "Поиск",
         add: "Добавить",
+        requests: "Заявки",
         help: "Помощь",
         stats: "Статистика"
       },
       tree: {
         name: "Алаш",
-        addNode: "Добавить узел"
+        addNode: "Добавить узел",
+        requests: "Заявки"
       },
       search: {
         placeholder: "Поиск по именам...",
         results: "Результаты поиска:",
         minChars: "Введите минимум 2 символа",
-        noResults: "Ничего не найдено"
+        noResults: "Ничего не найдено",
+        found: "Найдено: {count}"
       },
       add: {
         title: "Добавить нового человека",
+        info: "Ваша заявка будет отправлена администратору на рассмотрение",
         name: "Имя:",
         namePlaceholder: "Введите имя",
         parent: "Родитель:",
         selectParent: "Выберите родителя",
-        info: "Дополнительная информация:",
-        infoPlaceholder: "Годы жизни, достижения...",
-        button: "Добавить в дерево"
+        infoLabel: "Дополнительная информация:",
+        infoPlaceholder: "Годы жизни, достижения, место проживания...",
+        email: "Ваш email (для ответа):",
+        emailPlaceholder: "example@email.com",
+        button: "Отправить заявку"
+      },
+      requests: {
+        title: "Заявки на добавление",
+        adminOnly: "Эта секция доступна только администратору",
+        noRequests: "Нет ожидающих заявок",
+        date: "Дата:",
+        parent: "Родитель:",
+        info: "Информация:",
+        email: "Email:",
+        approve: "Одобрить",
+        reject: "Отклонить",
+        approved: "Заявка одобрена",
+        rejected: "Заявка отклонена"
       },
       help: {
         title: "Помощь по использованию Шежіре",
@@ -565,18 +784,27 @@
         searchTitle: "🔍 Поиск",
         searchPoints: [
           "Введите имя в поле поиска",
-          "Кликните на результат для перехода к этому человеку в дереве"
+          "Кликните на результат для перехода к этому человеку в дереве",
+          "Найденный человек будет подсвечен желтым цветом"
         ],
         addTitle: "👤 Добавление людей",
         addPoints: [
           "Заполните форму в разделе \"Добавить\"",
           "Выберите родителя из существующих в дереве",
-          "При необходимости добавьте дополнительную информацию"
+          "Ваша заявка будет отправлена администратору на рассмотрение",
+          "После одобрения человек появится в дереве"
+        ],
+        requestsTitle: "📋 Система заявок",
+        requestsPoints: [
+          "Только администратор может одобрять заявки",
+          "Каждая заявка содержит информацию о новом человеке",
+          "После одобрения человек автоматически добавляется в дереве"
         ],
         statsTitle: "📊 Статистика",
         statsPoints: [
           "Просматривайте общую статистику вашего дерева",
-          "Узнайте количество людей на разных уровнях"
+          "Узнайте количество людей на разных уровнях",
+          "Следите за количеством веток и листьев"
         ]
       },
       stats: {
@@ -587,13 +815,25 @@
         branches: "Веток",
         branchesLabel: "основные ветви",
         leaves: "Листьев",
-        leavesLabel: "конечные узлы"
+        leavesLabel: "конечные узлы",
+        requests: "Заявок",
+        requestsLabel: "ожидают рассмотрения",
+        approved: "Одобрено",
+        approvedLabel: "заявок принято"
       },
       alerts: {
         enterName: "Введите имя",
         selectParent: "Выберите родителя",
-        added: "Добавлен: {name}\nРодитель: {parent}\nИнфо: {info}",
-        goTo: "Переход к: {name}\n(Функционал перехода будет добавлен позже)"
+        enterEmail: "Введите email для связи",
+        requestSent: "Заявка отправлена! Вы получите ответ на указанный email.",
+        requestError: "Ошибка при отправке заявки",
+        approved: "Заявка одобрена и человек добавлен в дерево",
+        rejected: "Заявка отклонена",
+        goToTree: "Переход к: {name}",
+        adminPassword: "Введите пароль администратора:",
+        wrongPassword: "Неверный пароль!",
+        loginSuccess: "Доступ разрешен",
+        logout: "Вы вышли из режима администратора"
       }
     },
     kk: {
@@ -602,28 +842,47 @@
         people: "Адамдар",
         search: "Іздеу",
         add: "Қосу",
+        requests: "Өтініштер",
         help: "Көмек",
         stats: "Статистика"
       },
       tree: {
         name: "Алаш",
-        addNode: "Түйін қосу"
+        addNode: "Түйін қосу",
+        requests: "Өтініштер"
       },
       search: {
         placeholder: "Есімдер бойынша іздеу...",
         results: "Іздеу нәтижелері:",
         minChars: "Кемінде 2 таңба енгізіңіз",
-        noResults: "Ештеңе табылмады"
+        noResults: "Ештеңе табылмады",
+        found: "Табылды: {count}"
       },
       add: {
         title: "Жаңа адамды қосу",
+        info: "Сіздің өтінішіңіз әкімшіге қарауға жіберіледі",
         name: "Аты:",
         namePlaceholder: "Атыңызды енгізіңіз",
         parent: "Ата-ана:",
         selectParent: "Ата-анасын таңдаңыз",
-        info: "Қосымша ақпарат:",
-        infoPlaceholder: "Өмір сүрген жылдары, жетістіктері...",
-        button: "Ағашқа қосу"
+        infoLabel: "Қосымша ақпарат:",
+        infoPlaceholder: "Өмір сүрген жылдары, жетістіктері, тұратын жері...",
+        email: "Сіздің email (жауап үшін):",
+        emailPlaceholder: "example@email.com",
+        button: "Өтініш жіберу"
+      },
+      requests: {
+        title: "Қосу өтініштері",
+        adminOnly: "Бұл бөлім тек әкімшіге қолжетімді",
+        noRequests: "Күттү өтініштер жоқ",
+        date: "Күні:",
+        parent: "Ата-ана:",
+        info: "Ақпарат:",
+        email: "Email:",
+        approve: "Мақұлдау",
+        reject: "Бас тарту",
+        approved: "Өтініш мақұлданды",
+        rejected: "Өтініш қабылданбады"
       },
       help: {
         title: "Шежірені пайдалану туралы көмек",
@@ -638,18 +897,27 @@
         searchTitle: "🔍 Іздеу",
         searchPoints: [
           "Іздеу өрісіне есім енгізіңіз",
-          "Ағашта осы адамға өту үшін нәтижені басыңыз"
+          "Ағашта осы адамға өту үшін нәтижені басыңыз",
+          "Табылған адам сары түспен жарықталады"
         ],
         addTitle: "👤 Адамдарды қосу",
         addPoints: [
           "\"Қосу\" бөліміндегі форманы толтырыңыз",
           "Ағашта бар ата-ананы таңдаңыз",
-          "Қажет болса қосымша ақпарат қосыңыз"
+          "Сіздің өтінішіңіз әкімшіге қарауға жіберіледі",
+          "Мақұлданғаннан кейін адам ағашта пайда болады"
+        ],
+        requestsTitle: "📋 Өтініштер жүйесі",
+        requestsPoints: [
+          "Тек әкімші өтініштерді мақұлдай алады",
+          "Әрбір өтініште жаңа адам туралы ақпарат бар",
+          "Мақұлданғаннан кейін адам ағашта автоматты түрде қосылады"
         ],
         statsTitle: "📊 Статистика",
         statsPoints: [
           "Ағашыңыздың жалпы статистикасын қараңыз",
-          "Әртүрлі деңгейлердегі адамдар санын біліңіз"
+          "Әртүрлі деңгейлердегі адамдар санын біліңіз",
+          "Бұтақтар мен жапырақтар санын бақылаңыз"
         ]
       },
       stats: {
@@ -660,13 +928,25 @@
         branches: "Бұтақтар",
         branchesLabel: "негізгі бұтақтар",
         leaves: "Жапырақтар",
-        leavesLabel: "соңғы түйіндер"
+        leavesLabel: "соңғы түйіндер",
+        requests: "Өтініштер",
+        requestsLabel: "күтіп тұр",
+        approved: "Мақұлданды",
+        approvedLabel: "өтініш қабылданды"
       },
       alerts: {
         enterName: "Атыңызды енгізіңіз",
         selectParent: "Ата-анасын таңдаңыз",
-        added: "Қосылды: {name}\nАта-анасы: {parent}\nАқпарат: {info}",
-        goTo: "Өту: {name}\n(Өту функционалы кейінірек қосылады)"
+        enterEmail: "Байланыс үшін email енгізіңіз",
+        requestSent: "Өтініш жіберілді! Көрсетілген email-ге жауап аласыз.",
+        requestError: "Өтініш жіберу кезінде қате пайда болды",
+        approved: "Өтініш мақұлданды және адам ағашқа қосылды",
+        rejected: "Өтініш қабылданбады",
+        goToTree: "Өту: {name}",
+        adminPassword: "Әкімшінің құпия сөзін енгізіңіз:",
+        wrongPassword: "Қате құпия сөз!",
+        loginSuccess: "Рұқсат берілді",
+        logout: "Сіз әкімші режимінен шықтыңыз"
       }
     }
   };
@@ -1061,7 +1341,7 @@
                   { name: "Бегендік" },
                   { name: "Шегендік" },
                   { 
-                    name: "Қаракесек-Болатқожа",
+                    name: "Қаракесек-Bолатқожа",
                     children: [
                       { 
                         name: "Ақша",
@@ -1172,16 +1452,14 @@
                                                                                             children: [
                                                                                               { name: "Адилет" }
                                                                                             ]
-                                                            
-                                                      
+                                                                                          }
+                                                                                        ]
                                                                                       },
                                                                                       { 
                                                                                         name: "Данияр",
                                                                                         children: [
                                                                                           { name: "Алмас" },
                                                                                           { name: "Диас" }
-                                                                                          ]
-                                                                                        }
                                                                                         ]
                                                                                       }
                                                                                     ]
@@ -1396,7 +1674,7 @@
                         children: [
                           { name: "Иешумунке" },
                           { name: "Номұқа" },
-                          { name: "Мұғали" }
+                          { name: "Мұқали" }
                         ]
                       },
                       { 
@@ -1728,6 +2006,136 @@
     ]
   };
 
+  // ИНИЦИАЛИЗАЦИЯ LOCALSTORAGE
+  function initStorage() {
+    if (!localStorage.getItem(STORAGE_KEYS.TREE)) {
+      localStorage.setItem(STORAGE_KEYS.TREE, JSON.stringify(currentTreeData));
+    } else {
+      currentTreeData = JSON.parse(localStorage.getItem(STORAGE_KEYS.TREE));
+    }
+    
+    if (!localStorage.getItem(STORAGE_KEYS.REQUESTS)) {
+      localStorage.setItem(STORAGE_KEYS.REQUESTS, JSON.stringify([]));
+    }
+    
+    if (!localStorage.getItem(STORAGE_KEYS.APPROVED)) {
+      localStorage.setItem(STORAGE_KEYS.APPROVED, JSON.stringify([]));
+    }
+    
+    if (!localStorage.getItem(STORAGE_KEYS.PASSWORD)) {
+      localStorage.setItem(STORAGE_KEYS.PASSWORD, ADMIN_PASSWORD);
+    }
+  }
+
+  // ПОЛУЧЕНИЕ ДАННЫХ ИЗ LOCALSTORAGE
+  function getRequests() {
+    return JSON.parse(localStorage.getItem(STORAGE_KEYS.REQUESTS) || '[]');
+  }
+
+  function getApproved() {
+    return JSON.parse(localStorage.getItem(STORAGE_KEYS.APPROVED) || '[]');
+  }
+
+  // СОХРАНЕНИЕ ДАННЫХ В LOCALSTORAGE
+  function saveRequests(requests) {
+    localStorage.setItem(STORAGE_KEYS.REQUESTS, JSON.stringify(requests));
+  }
+
+  function saveApproved(approved) {
+    localStorage.setItem(STORAGE_KEYS.APPROVED, JSON.stringify(approved));
+  }
+
+  function saveTree() {
+    localStorage.setItem(STORAGE_KEYS.TREE, JSON.stringify(currentTreeData));
+  }
+
+  // ДОБАВЛЕНИЕ ЗАЯВКИ
+  function addRequest(request) {
+    const requests = getRequests();
+    request.id = Date.now();
+    request.date = new Date().toLocaleString();
+    request.status = 'pending';
+    requests.push(request);
+    saveRequests(requests);
+    return request;
+  }
+
+  // ОДОБРЕНИЕ ЗАЯВКИ
+  function approveRequest(requestId) {
+    const requests = getRequests();
+    const approved = getApproved();
+    
+    const requestIndex = requests.findIndex(r => r.id === requestId);
+    if (requestIndex !== -1) {
+      const request = requests[requestIndex];
+      request.status = 'approved';
+      
+      // Добавляем в дерево
+      addPersonToTree(request.name, request.parent, request.info);
+      
+      approved.push(request);
+      requests.splice(requestIndex, 1);
+      
+      saveRequests(requests);
+      saveApproved(approved);
+      saveTree();
+      
+      return true;
+    }
+    return false;
+  }
+
+  // ОТКЛОНЕНИЕ ЗАЯВКИ
+  function rejectRequest(requestId) {
+    const requests = getRequests();
+    const requestIndex = requests.findIndex(r => r.id === requestId);
+    
+    if (requestIndex !== -1) {
+      requests[requestIndex].status = 'rejected';
+      saveRequests(requests);
+      return true;
+    }
+    return false;
+  }
+
+  // ДОБАВЛЕНИЕ ЧЕЛОВЕКА В ДЕРЕВО
+  function addPersonToTree(name, parentName, info) {
+    function findNode(node, targetName) {
+      if (node.name === targetName) return node;
+      if (node.children) {
+        for (let child of node.children) {
+          const found = findNode(child, targetName);
+          if (found) return found;
+        }
+      }
+      if (node._children) {
+        for (let child of node._children) {
+          const found = findNode(child, targetName);
+          if (found) return found;
+        }
+      }
+      return null;
+    }
+    
+    const parentNode = findNode(currentTreeData, parentName);
+    if (parentNode) {
+      if (!parentNode.children) parentNode.children = [];
+      parentNode.children.push({
+        name: name,
+        info: info,
+        dateAdded: new Date().toISOString()
+      });
+      
+      // Обновляем дерево
+      if (document.getElementById('people-section').classList.contains('active')) {
+        initTree();
+      }
+      
+      return true;
+    }
+    return false;
+  }
+
   // ========== ПЕРЕКЛЮЧЕНИЕ ЯЗЫКА ==========
   const langButtons = document.querySelectorAll('.lang-btn');
   
@@ -1760,11 +2168,13 @@
     document.querySelector('[data-section="people"]').title = t.header.people;
     document.querySelector('[data-section="search"]').title = t.header.search;
     document.querySelector('[data-section="add"]').title = t.header.add;
+    document.querySelector('[data-section="requests"]').title = t.header.requests;
     document.querySelector('[data-section="help"]').title = t.header.help;
     document.querySelector('[data-section="stats"]').title = t.header.stats;
     
-    // Плавающая кнопка
+    // Плавающие кнопки
     document.querySelector('.floating-btn').title = t.tree.addNode;
+    document.querySelector('.admin-btn').title = t.tree.requests;
     
     // Поиск
     document.querySelector('.search-box').placeholder = t.search.placeholder;
@@ -1772,13 +2182,20 @@
     
     // Добавление
     document.querySelector('#add-section h2').textContent = t.add.title;
+    document.querySelector('#add-section p').innerHTML = `<i class="fas fa-info-circle"></i> ${t.add.info}`;
     document.querySelector('label[for="person-name"]').textContent = t.add.name;
     document.querySelector('#person-name').placeholder = t.add.namePlaceholder;
     document.querySelector('label[for="parent-select"]').textContent = t.add.parent;
     document.querySelector('#parent-select option').textContent = t.add.selectParent;
-    document.querySelector('label[for="person-info"]').textContent = t.add.info;
+    document.querySelector('label[for="person-info"]').textContent = t.add.infoLabel;
     document.querySelector('#person-info').placeholder = t.add.infoPlaceholder;
-    document.querySelector('.submit-btn').textContent = t.add.button;
+    document.querySelector('label[for="person-email"]').textContent = t.add.email;
+    document.querySelector('#person-email').placeholder = t.add.emailPlaceholder;
+    document.querySelector('#submit-request-btn').textContent = t.add.button;
+    
+    // Заявки
+    document.querySelector('#requests-section h2').textContent = t.requests.title;
+    document.querySelector('#admin-instructions').innerHTML = `<i class="fas fa-lock"></i> ${t.requests.adminOnly}`;
     
     // Помощь
     document.querySelector('#help-section h2').textContent = t.help.title;
@@ -1808,8 +2225,16 @@
       }
     });
     
-    helpItems[3].querySelector('h3').textContent = t.help.statsTitle;
-    const statsPoints = helpItems[3].querySelectorAll('p');
+    helpItems[3].querySelector('h3').textContent = t.help.requestsTitle;
+    const requestsPoints = helpItems[3].querySelectorAll('p');
+    t.help.requestsPoints.forEach((point, index) => {
+      if (requestsPoints[index]) {
+        requestsPoints[index].innerHTML = '• ' + point;
+      }
+    });
+    
+    helpItems[4].querySelector('h3').textContent = t.help.statsTitle;
+    const statsPoints = helpItems[4].querySelectorAll('p');
     t.help.statsPoints.forEach((point, index) => {
       if (statsPoints[index]) {
         statsPoints[index].innerHTML = '• ' + point;
@@ -1830,9 +2255,20 @@
     statCards[3].querySelector('h3').textContent = t.stats.leaves;
     statCards[3].querySelector('.stat-label').textContent = t.stats.leavesLabel;
     
+    statCards[4].querySelector('h3').textContent = t.stats.requests;
+    statCards[4].querySelector('.stat-label').textContent = t.stats.requestsLabel;
+    
+    statCards[5].querySelector('h3').textContent = t.stats.approved;
+    statCards[5].querySelector('.stat-label').textContent = t.stats.approvedLabel;
+    
     // Обновляем дерево, если оно активно
     if (document.getElementById('people-section').classList.contains('active')) {
       setTimeout(initTree, 100);
+    }
+    
+    // Обновляем список заявок
+    if (document.getElementById('requests-section').classList.contains('active')) {
+      loadRequests();
     }
   }
 
@@ -1868,6 +2304,11 @@
       if (sectionId === 'add') {
         updateParentSelect();
       }
+      
+      // Если переключаемся на заявки - проверяем пароль
+      if (sectionId === 'requests') {
+        checkAdminAccess();
+      }
     });
   });
 
@@ -1878,16 +2319,16 @@
 
     d3.select("#tree-container").html("");
 
-    const svg = d3.select("#tree-container")
+    svg = d3.select("#tree-container")
       .append("svg")
       .attr("width", width)
       .attr("height", height);
 
-    const g = svg.append("g")
+    g = svg.append("g")
       .attr("transform", `translate(${width / 2 - 80}, ${height / 2})`);
 
     // ZOOM функция
-    const zoom = d3.zoom()
+    zoom = d3.zoom()
       .scaleExtent([0.1, 3])
       .on("zoom", (event) => {
         g.attr("transform", event.transform);
@@ -1900,7 +2341,7 @@
     const treeLayout = d3.tree()
       .nodeSize([60, 240]);
 
-    let root = d3.hierarchy(currentTreeData);
+    treeRoot = d3.hierarchy(currentTreeData);
 
     // СВОРАЧИВАЕМ ВСЕ УЗЛЫ КРОМЕ АЛАШ
     function collapseAllExceptRoot(d) {
@@ -1911,21 +2352,21 @@
       }
     }
     
-    if (root.children) {
-      root.children.forEach(collapseAllExceptRoot);
+    if (treeRoot.children) {
+      treeRoot.children.forEach(collapseAllExceptRoot);
     }
 
-    root.x0 = 0;
-    root.y0 = 0;
+    treeRoot.x0 = 0;
+    treeRoot.y0 = 0;
 
-    updateTree(root);
+    updateTree(treeRoot);
 
     function updateTree(source) {
       const duration = 400;
-      treeLayout(root);
+      treeLayout(treeRoot);
 
-      const nodes = root.descendants();
-      const links = root.links();
+      const nodes = treeRoot.descendants();
+      const links = treeRoot.links();
 
       const node = g.selectAll("g.node-group")
         .data(nodes, d => d.id || (d.id = ++i));
@@ -1974,32 +2415,28 @@
       nodeEnter.append("rect")
         .attr("class", d => {
           let cardClass = "node-card";
-          // УБИРАЕМ КЛАССЫ ДЛЯ ЦВЕТОВ УРОВНЕЙ - ВСЕ ЗЕЛЕНЫЕ
-          // if (d.depth === 0) cardClass += " root";
-          // if (d.depth === 1) cardClass += " level-1";
-          // if (d.depth === 2) cardClass += " level-2";
           if (d._children) cardClass += " collapsed";
           if (d.children) cardClass += " expanded";
           return cardClass;
         })
         .attr("x", 0)
-        .attr("y", -25)      // Меньше высота
-        .attr("width", 150)  // Меньше ширина
-        .attr("height", 50)  // Меньше высота
-        .attr("rx", 25)      // Овальная форма
+        .attr("y", -25)
+        .attr("width", 150)
+        .attr("height", 50)
+        .attr("rx", 25)
         .attr("ry", 25);
 
       // КРУГ ДЛЯ ФОТОГРАФИИ - ПРЯМО У ЛЕВОГО КРАЯ КАРТОЧКИ
       nodeEnter.append("clipPath")
         .attr("id", d => `clip-${d.id}`)
         .append("circle")
-        .attr("cx", 25)      // Ближе к левому краю
-        .attr("cy", 0)       // Центр карточки
-        .attr("r", 20);      // Немного меньше радиус
+        .attr("cx", 25)
+        .attr("cy", 0)
+        .attr("r", 20);
 
       // ФОТОГРАФИЯ - ПРЯМО У ЛЕВОГО КРАЯ
       nodeEnter.append("image")
-        .attr("x", 5)        // Прямо у левого края карточки
+        .attr("x", 5)
         .attr("y", -20)
         .attr("width", 40)
         .attr("height", 40)
@@ -2010,9 +2447,9 @@
       // ТЕКСТ - СДВИГАЕМ ВПРАВО ОТ КРУЖКА
       nodeEnter.append("text")
         .attr("class", "node-text")
-        .attr("x", 55)       // Правее кружка
+        .attr("x", 55)
         .attr("y", 0)
-        .style("font-size", "11px") // Немного меньше шрифт
+        .style("font-size", "11px")
         .text(d => {
           const name = d.data.name;
           if (name.length > 12) return name.substring(0, 11) + "...";
@@ -2031,10 +2468,6 @@
       nodeUpdate.select("rect")
         .attr("class", d => {
           let cardClass = "node-card";
-          // УБИРАЕМ КЛАССЫ ДЛЯ ЦВЕТОВ УРОВНЕЙ - ВСЕ ЗЕЛЕНЫЕ
-          // if (d.depth === 0) cardClass += " root";
-          // if (d.depth === 1) cardClass += " level-1";
-          // if (d.depth === 2) cardClass += " level-2";
           if (d._children) cardClass += " collapsed";
           if (d.children) cardClass += " expanded";
           return cardClass;
@@ -2047,7 +2480,7 @@
         .attr("width", function() {
           const text = this.parentNode.querySelector("text");
           const textWidth = text ? text.getBBox().width : 0;
-          return Math.max(150, textWidth + 70); // Минимальная ширина меньше
+          return Math.max(150, textWidth + 70);
         });
 
       /* ===== LINKS ===== */
@@ -2068,7 +2501,7 @@
         .attr("d", d => {
           const sourceNode = d.source;
           const targetNode = d.target;
-          const sourceRect = sourceNode.nodeRectWidth || 150; // Новая меньшая ширина
+          const sourceRect = sourceNode.nodeRectWidth || 150;
           const targetRect = targetNode.nodeRectWidth || 150;
           
           const startX = sourceNode.y + sourceRect;
@@ -2086,7 +2519,7 @@
               ${endX} ${endY}
           `;
         })
-        .style("opacity", 1); // Полная видимость веток
+        .style("opacity", 1);
 
       // Сохраняем ширину карточки для узла
       nodes.forEach(d => {
@@ -2130,7 +2563,48 @@
     }, 100);
   }
 
-  // ========== ФУНКЦИЯ ДЛЯ ПОИСКА ==========
+  // ФУНКЦИЯ ДЛЯ ПОДСВЕТКИ УЗЛА
+  function highlightNode(nodeName) {
+    // Снимаем подсветку со всех узлов
+    d3.selectAll(".node-card").classed("highlighted", false);
+    
+    // Находим нужный узел
+    function findAndHighlight(node, targetName) {
+      if (node.data.name === targetName) {
+        // Находим соответствующий элемент SVG
+        const nodeElement = d3.selectAll(".node-group").filter((d, i, nodes) => {
+          return d.data.name === targetName;
+        });
+        
+        if (nodeElement.size() > 0) {
+          // Подсвечиваем узел
+          nodeElement.select(".node-card").classed("highlighted", true);
+          
+          // Центрируем дерево на этом узле
+          const transform = d3.zoomIdentity
+            .translate(window.innerWidth / 2 - node.x, window.innerHeight / 2 - node.y)
+            .scale(1.5);
+          
+          svg.transition().duration(1000).call(zoom.transform, transform);
+          
+          return node;
+        }
+      }
+      
+      if (node.children) {
+        for (let child of node.children) {
+          const found = findAndHighlight(child, targetName);
+          if (found) return found;
+        }
+      }
+      
+      return null;
+    }
+    
+    return findAndHighlight(treeRoot, nodeName);
+  }
+
+  // ========== ПОИСК ==========
   function searchInTree(query) {
     const results = [];
     const searchLower = query.toLowerCase();
@@ -2157,7 +2631,6 @@
     return results;
   }
 
-  // ========== ПОИСК ==========
   const searchInput = document.querySelector('.search-box');
   const resultsList = document.getElementById('search-results-list');
   
@@ -2176,7 +2649,7 @@
       return;
     }
     
-    let html = '';
+    let html = `<p>${translations[currentLanguage].search.found.replace('{count}', results.length)}</p>`;
     results.forEach(result => {
       html += `
         <div class="result-item" data-name="${result.name}">
@@ -2192,9 +2665,19 @@
     document.querySelectorAll('.result-item').forEach(item => {
       item.addEventListener('click', function() {
         const name = this.getAttribute('data-name');
-        const t = translations[currentLanguage];
-        const message = t.alerts.goTo.replace('{name}', name);
-        alert(message);
+        
+        // Переключаемся на дерево
+        icons.forEach(i => i.classList.remove('active'));
+        document.querySelector('[data-section="people"]').classList.add('active');
+        
+        sections.forEach(s => s.classList.remove('active'));
+        document.getElementById('people-section').classList.add('active');
+        
+        // Подсвечиваем и центрируем узел
+        setTimeout(() => {
+          highlightNode(name);
+          showNotification(translations[currentLanguage].alerts.goTo.replace('{name}', name));
+        }, 100);
       });
     });
   });
@@ -2206,43 +2689,174 @@
     
     function addOptions(node, depth = 0) {
       const indent = '— '.repeat(depth);
-      select.innerHTML += `<option value="${node.data.name}">${indent}${node.data.name}</option>`;
+      select.innerHTML += `<option value="${node.name}">${indent}${node.name}</option>`;
       
       if (node.children) {
         node.children.forEach(child => addOptions(child, depth + 1));
       }
     }
     
-    const root = d3.hierarchy(currentTreeData);
-    addOptions(root);
+    addOptions(currentTreeData);
   }
 
-  const addForm = document.querySelector('.add-form');
-  addForm.addEventListener('submit', function(e) {
-    e.preventDefault();
-    
+  // ОТПРАВКА ЗАЯВКИ
+  document.getElementById('submit-request-btn').addEventListener('click', function() {
     const name = document.getElementById('person-name').value;
     const parent = document.getElementById('parent-select').value;
     const info = document.getElementById('person-info').value;
+    const email = document.getElementById('person-email').value;
     const t = translations[currentLanguage];
     
     if (!name) {
-      alert(t.alerts.enterName);
+      showNotification(t.alerts.enterName, true);
       return;
     }
     
     if (!parent) {
-      alert(t.alerts.selectParent);
+      showNotification(t.alerts.selectParent, true);
       return;
     }
     
-    const message = t.alerts.added
-      .replace('{name}', name)
-      .replace('{parent}', parent)
-      .replace('{info}', info || (currentLanguage === 'ru' ? 'нет' : 'жоқ'));
-    alert(message);
+    if (!email) {
+      showNotification(t.alerts.enterEmail, true);
+      return;
+    }
     
-    this.reset();
+    const request = {
+      name: name,
+      parent: parent,
+      info: info,
+      email: email
+    };
+    
+    try {
+      addRequest(request);
+      showNotification(t.alerts.requestSent);
+      
+      // Очищаем форму
+      document.getElementById('person-name').value = '';
+      document.getElementById('parent-select').value = '';
+      document.getElementById('person-info').value = '';
+      document.getElementById('person-email').value = '';
+      
+      // Обновляем статистику
+      updateStatistics();
+      
+    } catch (error) {
+      console.error(error);
+      showNotification(t.alerts.requestError, true);
+    }
+  });
+
+  // ========== СИСТЕМА ЗАЯВОК ==========
+  let isAdminLoggedIn = false;
+
+  function checkAdminAccess() {
+    if (!isAdminLoggedIn) {
+      const password = prompt(translations[currentLanguage].alerts.adminPassword);
+      
+      if (password === ADMIN_PASSWORD) {
+        isAdminLoggedIn = true;
+        showNotification(translations[currentLanguage].alerts.loginSuccess);
+        loadRequests();
+      } else {
+        showNotification(translations[currentLanguage].alerts.wrongPassword, true);
+        
+        // Переключаемся обратно на дерево
+        icons.forEach(i => i.classList.remove('active'));
+        document.querySelector('[data-section="people"]').classList.add('active');
+        
+        sections.forEach(s => s.classList.remove('active'));
+        document.getElementById('people-section').classList.add('active');
+      }
+    } else {
+      loadRequests();
+    }
+  }
+
+  function loadRequests() {
+    const requests = getRequests();
+    const requestsList = document.getElementById('requests-list');
+    const t = translations[currentLanguage];
+    
+    if (requests.length === 0) {
+      requestsList.innerHTML = `<p style="text-align: center; color: #888;">${t.requests.noRequests}</p>`;
+      return;
+    }
+    
+    let html = '';
+    requests.forEach(request => {
+      if (request.status === 'pending') {
+        html += `
+          <div class="request-item" data-id="${request.id}">
+            <div class="request-header">
+              <div class="request-name">${request.name}</div>
+              <div class="request-date">${t.requests.date} ${request.date}</div>
+            </div>
+            <div class="request-details">
+              <div><strong>${t.requests.parent}:</strong> ${request.parent}</div>
+              ${request.info ? `<div><strong>${t.requests.info}:</strong> ${request.info}</div>` : ''}
+              <div><strong>${t.requests.email}:</strong> ${request.email}</div>
+            </div>
+            <div class="request-actions">
+              <button class="action-btn approve-btn" onclick="handleApprove(${request.id})">
+                ${t.requests.approve}
+              </button>
+              <button class="action-btn reject-btn" onclick="handleReject(${request.id})">
+                ${t.requests.reject}
+              </button>
+            </div>
+          </div>
+        `;
+      }
+    });
+    
+    requestsList.innerHTML = html;
+    updateStatistics();
+  }
+
+  // Глобальные функции для обработки заявок
+  window.handleApprove = function(requestId) {
+    if (approveRequest(requestId)) {
+      showNotification(translations[currentLanguage].alerts.approved);
+      loadRequests();
+      updateStatistics();
+      
+      // Обновляем дерево
+      if (document.getElementById('people-section').classList.contains('active')) {
+        initTree();
+      }
+    }
+  };
+
+  window.handleReject = function(requestId) {
+    if (rejectRequest(requestId)) {
+      showNotification(translations[currentLanguage].alerts.rejected);
+      loadRequests();
+      updateStatistics();
+    }
+  };
+
+  // Кнопка выхода из режима админа
+  document.querySelector('.admin-btn').addEventListener('click', function() {
+    if (isAdminLoggedIn) {
+      isAdminLoggedIn = false;
+      showNotification(translations[currentLanguage].alerts.logout);
+      
+      // Переключаемся на дерево
+      icons.forEach(i => i.classList.remove('active'));
+      document.querySelector('[data-section="people"]').classList.add('active');
+      
+      sections.forEach(s => s.classList.remove('active'));
+      document.getElementById('people-section').classList.add('active');
+    } else {
+      // Переключаемся на заявки (будет запрошен пароль)
+      icons.forEach(i => i.classList.remove('active'));
+      document.querySelector('[data-section="requests"]').classList.add('active');
+      
+      sections.forEach(s => s.classList.remove('active'));
+      document.getElementById('requests-section').classList.add('active');
+    }
   });
 
   // ========== СТАТИСТИКА ==========
@@ -2288,11 +2902,27 @@
     
     const root = d3.hierarchy(currentTreeData);
     const stats = countNodes(root);
+    const requests = getRequests();
+    const approved = getApproved();
     
     document.getElementById('total-people').textContent = stats.total;
     document.getElementById('total-levels').textContent = stats.maxDepth + 1;
     document.getElementById('total-branches').textContent = stats.branches;
     document.getElementById('total-leaves').textContent = stats.leaves;
+    document.getElementById('total-requests').textContent = requests.filter(r => r.status === 'pending').length;
+    document.getElementById('total-approved').textContent = approved.length;
+  }
+
+  // ========== УВЕДОМЛЕНИЯ ==========
+  function showNotification(message, isError = false) {
+    const notification = document.getElementById('notification');
+    notification.textContent = message;
+    notification.className = 'notification' + (isError ? ' error' : '');
+    notification.style.display = 'block';
+    
+    setTimeout(() => {
+      notification.style.display = 'none';
+    }, 3000);
   }
 
   // ========== КНОПКА + ==========
@@ -2308,11 +2938,16 @@
 
   // ========== ИНИЦИАЛИЗАЦИЯ ПРИ ЗАГРУЗКЕ ==========
   document.addEventListener('DOMContentLoaded', function() {
+    // Инициализируем хранилище
+    initStorage();
+    
+    // Инициализируем страницу
     initTree();
     updateStatistics();
     updateParentSelect();
     translatePage();
     
+    // Обработчик изменения размера окна
     window.addEventListener('resize', function() {
       if (document.getElementById('people-section').classList.contains('active')) {
         setTimeout(initTree, 100);
