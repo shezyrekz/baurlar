@@ -262,36 +262,53 @@
     cursor: pointer;
   }
   
+  /* ОВАЛЬНЫЕ КАРТОЧКИ (МЕНЬШЕ) С КРУЖКОМ У ЛЕВОГО КРАЯ */
   .node-card {
-    fill: #26a69a; /* ЗЕЛЕНЫЙ ЦВЕТ КАК ВЕРХНЯЯ ПАНЕЛЬ */
+    fill: #26a69a;
     stroke: #1e887c;
     stroke-width: 2px;
-    rx: 12px;
-    ry: 12px;
+    rx: 20px;  /* Чуть меньше закругление */
+    ry: 20px;
     filter: drop-shadow(2px 2px 4px rgba(0,0,0,0.2));
     transition: all 0.3s ease;
   }
   
   .node-card:hover {
     filter: drop-shadow(3px 3px 6px rgba(0,0,0,0.3));
-    fill: #2bbbad; /* Светлее при наведении */
+    fill: #2bbbad;
   }
   
   .node-card.selected {
-    fill: #1e887c; /* Темнее при выборе */
+    fill: #1e887c;
     stroke: #15776b;
     stroke-width: 3px;
     filter: drop-shadow(4px 4px 8px rgba(0,0,0,0.4));
   }
   
   .node-card.collapsed {
-    fill: #4CAF50; /* Другой оттенок зеленого для свернутых */
+    fill: #4CAF50;
     stroke: #388E3C;
   }
   
   .node-card.expanded {
-    fill: #26a69a; /* Основной зеленый для развернутых */
+    fill: #26a69a;
     stroke: #1e887c;
+  }
+  
+  /* Цвета для разных уровней */
+  .node-card.root { /* Для корня "Алаш" */
+    fill: #d32f2f;
+    stroke: #b71c1c;
+  }
+  
+  .node-card.level-1 { /* Для жузов */
+    fill: #1976d2;
+    stroke: #1565c0;
+  }
+  
+  .node-card.level-2 { /* Для родов */
+    fill: #388e3c;
+    stroke: #2e7d32;
   }
   
   .node-image-container {
@@ -304,7 +321,7 @@
   }
   
   .node-text {
-    font-size: 13px;
+    font-size: 12px;
     pointer-events: none;
     user-select: none;
     fill: white;
@@ -315,17 +332,19 @@
     text-shadow: 1px 1px 2px rgba(0,0,0,0.3);
   }
   
+  /* ВЕТКИ - ЧЕРНЫЕ И ВИДИМЫЕ */
   .link {
     fill: none;
-    stroke: #789d92;
+    stroke: #000000; /* ЧЕРНЫЙ ЦВЕТ */
     stroke-width: 2px;
-    opacity: 0.7;
+    opacity: 1; /* ПОЛНАЯ ВИДИМОСТЬ */
     transition: opacity 0.3s;
   }
   
   .link:hover {
     opacity: 1;
     stroke-width: 3px;
+    stroke: #333333; /* Темнее при наведении */
   }
   
   .floating-btn {
@@ -956,7 +975,7 @@
                               },
                               { 
                                 name: "Өмірқұл",
-                                children: [
+                        children: [
                                   { 
                                     name: "Серікбай",
                                     children: [
@@ -1888,7 +1907,7 @@
 
     // Уменьшаем расстояние между узлами для более компактного отображения
     const treeLayout = d3.tree()
-      .nodeSize([80, 180]); // Уменьшили расстояния
+      .nodeSize([80, 180]);
 
     let root = d3.hierarchy(currentTreeData);
 
@@ -1960,52 +1979,52 @@
           updateTree(d);
         });
 
-      // КАРТОЧКА УЗЛА - ВСЕ ЗЕЛЕНЫЕ
+      // КАРТОЧКА УЗЛА - ОВАЛЬНАЯ (МЕНЬШЕ) С КРУЖКОМ У ЛЕВОГО КРАЯ
       nodeEnter.append("rect")
         .attr("class", d => {
           let cardClass = "node-card";
+          // Добавляем классы для уровней
+          if (d.depth === 0) cardClass += " root";
+          if (d.depth === 1) cardClass += " level-1";
+          if (d.depth === 2) cardClass += " level-2";
           if (d._children) cardClass += " collapsed";
           if (d.children) cardClass += " expanded";
           return cardClass;
         })
         .attr("x", 0)
-        .attr("y", -20) // Уменьшили высоту карточки
-        .attr("width", 140) // Уменьшили ширину карточки
-        .attr("height", 40)
-        .attr("rx", 8)
-        .attr("ry", 8);
+        .attr("y", -25)      // Меньше высота
+        .attr("width", 150)  // Меньше ширина
+        .attr("height", 50)  // Меньше высота
+        .attr("rx", 25)      // Овальная форма
+        .attr("ry", 25);
 
-      // КРУГЛАЯ МАСКА ДЛЯ ФОТО
+      // КРУГ ДЛЯ ФОТОГРАФИИ - ПРЯМО У ЛЕВОГО КРАЯ КАРТОЧКИ
       nodeEnter.append("clipPath")
         .attr("id", d => `clip-${d.id}`)
         .append("circle")
-        .attr("cx", 25)
-        .attr("cy", 0)
-        .attr("r", 16);
+        .attr("cx", 25)      // Ближе к левому краю
+        .attr("cy", 0)       // Центр карточки
+        .attr("r", 20);      // Немного меньше радиус
 
-      // ФОТО
+      // ФОТОГРАФИЯ - ПРЯМО У ЛЕВОГО КРАЯ
       nodeEnter.append("image")
-        .attr("x", 9)
-        .attr("y", -16)
-        .attr("width", 32)
-        .attr("height", 32)
+        .attr("x", 5)        // Прямо у левого края карточки
+        .attr("y", -20)
+        .attr("width", 40)
+        .attr("height", 40)
         .attr("href", "images/yurt.png")
         .attr("clip-path", d => `url(#clip-${d.id})`)
         .attr("preserveAspectRatio", "xMidYMid slice");
 
-      // ТЕКСТ
+      // ТЕКСТ - СДВИГАЕМ ВПРАВО ОТ КРУЖКА
       nodeEnter.append("text")
         .attr("class", "node-text")
-        .attr("x", 48)
+        .attr("x", 55)       // Правее кружка
         .attr("y", 0)
-        .attr("dy", "0.35em")
-        .style("font-size", "11px") // Уменьшили размер шрифта
+        .style("font-size", "11px") // Немного меньше шрифт
         .text(d => {
-          // Обрезаем слишком длинные имена
           const name = d.data.name;
-          if (name.length > 15) {
-            return name.substring(0, 14) + "...";
-          }
+          if (name.length > 12) return name.substring(0, 11) + "...";
           return name;
         });
 
@@ -2021,6 +2040,9 @@
       nodeUpdate.select("rect")
         .attr("class", d => {
           let cardClass = "node-card";
+          if (d.depth === 0) cardClass += " root";
+          if (d.depth === 1) cardClass += " level-1";
+          if (d.depth === 2) cardClass += " level-2";
           if (d._children) cardClass += " collapsed";
           if (d.children) cardClass += " expanded";
           return cardClass;
@@ -2033,7 +2055,7 @@
         .attr("width", function() {
           const text = this.parentNode.querySelector("text");
           const textWidth = text ? text.getBBox().width : 0;
-          return Math.max(140, textWidth + 55);
+          return Math.max(150, textWidth + 70); // Минимальная ширина меньше
         });
 
       /* ===== LINKS ===== */
@@ -2054,8 +2076,8 @@
         .attr("d", d => {
           const sourceNode = d.source;
           const targetNode = d.target;
-          const sourceRect = sourceNode.nodeRectWidth || 140;
-          const targetRect = targetNode.nodeRectWidth || 140;
+          const sourceRect = sourceNode.nodeRectWidth || 150; // Новая меньшая ширина
+          const targetRect = targetNode.nodeRectWidth || 150;
           
           const startX = sourceNode.y + sourceRect;
           const endX = targetNode.y;
@@ -2072,7 +2094,7 @@
               ${endX} ${endY}
           `;
         })
-        .style("opacity", 0.7);
+        .style("opacity", 1); // Полная видимость веток
 
       // Сохраняем ширину карточки для узла
       nodes.forEach(d => {
@@ -2111,7 +2133,7 @@
     setTimeout(() => {
       const initialTransform = d3.zoomIdentity
         .translate(width / 2 - 80, height / 2 - 100)
-        .scale(0.9); // Уменьшаем масштаб для лучшего обзора
+        .scale(0.9);
       svg.call(zoom.transform, initialTransform);
     }, 100);
   }
@@ -2222,14 +2244,12 @@
       return;
     }
     
-    // Здесь будет логика добавления в дерево
     const message = t.alerts.added
       .replace('{name}', name)
       .replace('{parent}', parent)
       .replace('{info}', info || (currentLanguage === 'ru' ? 'нет' : 'жоқ'));
     alert(message);
     
-    // Очищаем форму
     this.reset();
   });
 
@@ -2285,7 +2305,6 @@
 
   // ========== КНОПКА + ==========
   document.querySelector('.floating-btn').addEventListener('click', function() {
-    // Переключаем на секцию добавления
     icons.forEach(i => i.classList.remove('active'));
     document.querySelector('[data-section="add"]').classList.add('active');
     
