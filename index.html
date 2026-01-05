@@ -1898,7 +1898,7 @@
 
     // Уменьшаем расстояние между узлами для более компактного отображения
     const treeLayout = d3.tree()
-      .nodeSize([80, 180]);
+      .nodeSize([60, 120]);
 
     let root = d3.hierarchy(currentTreeData);
 
@@ -2124,8 +2124,8 @@
     // Центрируем дерево после загрузки
     setTimeout(() => {
       const initialTransform = d3.zoomIdentity
-        .translate(width / 2 - 80, height / 2 - 100)
-        .scale(0.9);
+        .translate(width / 2 - 60, height / 2 - 120)
+        .scale(1.0);
       svg.call(zoom.transform, initialTransform);
     }, 100);
   }
