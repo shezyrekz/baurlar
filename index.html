@@ -643,7 +643,7 @@
       <h3>📋 Система заявок</h3>
       <p>• Только администратор может одобрять заявки</p>
       <p>• Каждая заявка содержит информацию о новом человеке</p>
-      <p>• После одобрения человек автоматически добавляется в дерево</p>
+      <p>• После одобрения человек автоматически добавляется в дереве</p>
     </div>
     
     <div class="help-item">
@@ -911,7 +911,7 @@
         requestsPoints: [
           "Тек әкімші өтініштерді мақұлдай алады",
           "Әрбір өтініште жаңа адам туралы ақпарат бар",
-          "Мақұлданғаннан кейін адам ағашта автоматты түрде қосылады"
+          "После одобрения человек автоматически добавляется в дереве"
         ],
         statsTitle: "📊 Статистика",
         statsPoints: [
@@ -1268,7 +1268,7 @@
                                         ]
                                       },
                                       { 
-                                        name: "Смадияр",
+                                        name: "Смадияар",
                                         children: [
                                           { 
                                             name: "Данияр",
@@ -1556,7 +1556,7 @@ children: [
                           { name: "Жүніс" },
                           { name: "Омар" },
                           { name: "Қайырлы" },
-                          { name: "Мадияр" }
+                          { name: "Мадияар" }
                         ]
                       },
                       { 
@@ -2377,7 +2377,129 @@ children: [
         .style("opacity", 0)
         .remove();
 
-    /* ===== ENTER ===== */
+      /* ===== ENTER ===== */
+      const nodeEnter = node.enter()
+        .append("g")
+        .attr("class", "node-group")
+        .attr("transform", `translate(${source.y0},${source.x0})`)
+        .style("opacity", 0)
+        .on("click", (e, d) => {
+          e.stopPropagation();
+          
+          // Снимаем выделение с предыдущего узла
+          if (selectedNode) {
+            d3.select(selectedNode).select(".node-card").classed("selected", false);
+          }
+          
+          // Выделяем текущий узел
+          const currentNode = d3.select(e.currentTarget);
+          currentNode.select(".node-card").classed("selected", true);
+          selectedNode = e.currentTarget;
+          
+          // Показываем информацию о выбранном узле
+          showNodeInfo(d);
+          
+          // Раскрываем/сворачиваем
+          if (d.children) {
+            d._children = d.children;
+            d.children = null;
+          } else {
+            d.children = d._children;
+            d._children = null;
+          }
+          updateTree(d);
+        });
+
+      // КАРТОЧКА УЗЛА - ОВАЛЬНАЯ (МЕНЬШЕ) С КРУЖКОМ У ЛЕВОГО КРАЯ
+      nodeEnter.append("rect")
+        .attr("class", d => {
+          let cardClass = "node-card";
+          if (d._children) cardClass += " collapsed";
+          if (d.children) cardClass += " expanded";
+          return cardClass;
+        })
+        .attr("x", 0)
+        .attr("y", -25)
+        .attr("width", 150)
+        .attr("height", 50)
+        .attr("rx", 25)
+        .attr("ry", 25);
+
+      // КРУГ ДЛЯ ФОТОГРАФИИ - ПРЯМО У ЛЕВОГО КРАЯ КАРТОЧКИ
+      nodeEnter.append("clipPath")
+        .attr("id", d => `clip-${d.id}`)
+        .append("circle")
+        .attr("cx", 25)
+        .attr("cy", 0)
+        .attr("r", 20);
+
+      // ФОТОГРАФИЯ - ПРЯМО У ЛЕВОГО КРАЯ
+      nodeEnter.append("image")
+        .attr("x", 5)
+        .attr("y", -20)
+        .attr("width", 40)
+        .attr("height", 40)
+        .attr("href", d => {
+          if (d.data && d.data.photo) {
+            return `images/${d.data.photo}`;
+          }
+          return "images/yurt.png";
+        })
+        .attr("clip-path", d => `url(#clip-${d.id})`)
+        .attr("preserveAspectRatio", "xMidYMid slice")
+        .on("error", function() {
+          d3.select(this).attr("href", "images/yurt.png");
+        });
+
+      // ТЕКСТ - СДВИГАЕМ ВПРАВО ОТ КРУЖКА
+      nodeEnter.append("text")
+        .attr("class", "node-text")
+        .attr("x", 55)
+        .attr("y", 0)
+        .style("font-size", "11px")
+        .text(d => {
+          const name = d.data.name;
+          if (name.length > 12) return name.substring(0, 11) + "...";
+          return name;
+        });
+
+      /* ===== UPDATE ===== */
+      const nodeUpdate = nodeEnter.merge(node);
+
+      nodeUpdate.transition()
+        .duration(duration)
+        .attr("transform", d => `translate(${d.y},${d.x})`)
+        .style("opacity", 1);
+
+      // Сначала обновляем карточку
+      nodeUpdate.select("rect")
+        .attr("class", d => {
+          let cardClass = "node-card";
+          if (d._children) cardClass += " collapsed";
+          if (d.children) cardClass += " expanded";
+          return cardClass;
+        })
+        .transition()
+        .duration(duration)
+        .attr("width", function() {
+          const text = this.parentNode.querySelector("text");
+          const textWidth = text ? text.getBBox().width : 0;
+          return Math.max(150, textWidth + 70);
+        });
+
+      // Потом обновляем фотографии
+      nodeUpdate.select("image")
+        .transition()
+        .duration(duration)
+        .attr("href", d => {
+          if (d.data && d.data.photo) {
+            return `images/${d.data.photo}`;
+          }
+          return "images/yurt.png";
+        })
+        .on("error", function() {
+          d3.select(this).attr("href", "images/yurt.png");
+        });
 
       /* ===== LINKS ===== */
       const link = g.selectAll("path.link")
