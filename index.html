@@ -2410,50 +2410,38 @@ children: [
           updateTree(d);
         });
 
-      // КАРТОЧКА УЗЛА - ОВАЛЬНАЯ (МЕНЬШЕ) С КРУЖКОМ У ЛЕВОГО КРАЯ
-      nodeEnter.append("rect")
-        .attr("class", d => {
-          let cardClass = "node-card";
-          if (d._children) cardClass += " collapsed";
-          if (d.children) cardClass += " expanded";
-          return cardClass;
-        })
-        .attr("x", 0)
-        .attr("y", -25)
-        .attr("width", 150)
-        .attr("height", 50)
-        .attr("rx", 25)
-        .attr("ry", 25);
+     // ФОТОГРАФИЯ - ПРЯМО У ЛЕВОГО КРАЯ
+nodeEnter.append("image")
+  .attr("x", 5)
+  .attr("y", -20)
+  .attr("width", 40)
+  .attr("height", 40)
+  .attr("href", d => {
+    // Проверяем, есть ли специальное фото у узла
+    if (d.data && d.data.photo) {
+      return `images/${d.data.photo}`;
+    }
+    // Иначе используем стандартное
+    return "images/yurt.png";
+  })
+  .attr("clip-path", d => `url(#clip-${d.id})`)
+  .attr("preserveAspectRatio", "xMidYMid slice")
+  .on("error", function() {
+    // Если фото не загрузилось, используем стандартное
+    d3.select(this).attr("href", "images/yurt.png");
+  });
 
-      // КРУГ ДЛЯ ФОТОГРАФИИ - ПРЯМО У ЛЕВОГО КРАЯ КАРТОЧКИ
-      nodeEnter.append("clipPath")
-        .attr("id", d => `clip-${d.id}`)
-        .append("circle")
-        .attr("cx", 25)
-        .attr("cy", 0)
-        .attr("r", 20);
-
-      // ФОТОГРАФИЯ - ПРЯМО У ЛЕВОГО КРАЯ
-      nodeEnter.append("image")
-        .attr("x", 5)
-        .attr("y", -20)
-        .attr("width", 40)
-        .attr("height", 40)
-        .attr("href", "images/yurt.png")
-        .attr("clip-path", d => `url(#clip-${d.id})`)
-        .attr("preserveAspectRatio", "xMidYMid slice");
-
-      // ТЕКСТ - СДВИГАЕМ ВПРАВО ОТ КРУЖКА
-      nodeEnter.append("text")
-        .attr("class", "node-text")
-        .attr("x", 55)
-        .attr("y", 0)
-        .style("font-size", "11px")
-        .text(d => {
-          const name = d.data.name;
-          if (name.length > 12) return name.substring(0, 11) + "...";
-          return name;
-        });
+// ТЕКСТ - СДВИГАЕМ ВПРАВО ОТ КРУЖКА
+nodeEnter.append("text")
+  .attr("class", "node-text")
+  .attr("x", 55)
+  .attr("y", 0)
+  .style("font-size", "11px")
+  .text(d => {
+    const name = d.data.name;
+    if (name.length > 12) return name.substring(0, 11) + "...";
+    return name;
+  });
 
       /* ===== UPDATE ===== */
       const nodeUpdate = nodeEnter.merge(node);
