@@ -3019,9 +3019,9 @@ nodeEnter.append("image")
       // ТЕКСТ - СДВИГАЕМ ВПРАВО ОТ КРУЖКА
       nodeEnter.append("text")
         .attr("class", "node-text")
-        .attr("x", 55)
+        .attr("x", 75)
         .attr("y", 0)
-        .style("font-size", "11px")
+        .style("font-size", "13px")
         .text(d => {
           const name = d.data.name;
           if (name.length > 12) return name.substring(0, 11) + "...";
